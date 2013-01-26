@@ -22,12 +22,8 @@ public class GameHolder implements ApplicationListener {
 
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
-    private final RenderQueueProxy mQueueProxy = new RenderQueueProxy() {
-        @Override
-        public void add(Renderable renderable) {
-            mToRender.add(renderable);
-        }
-    };
+    private final RenderQueueProxy mQueueProxy = new ListRenderQueueProxy(
+            mToRender);
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
@@ -171,6 +167,9 @@ public class GameHolder implements ApplicationListener {
         GameServices.advanceTicks();
         if (GameServices.getTicks() % 120 == 100) {
             mSoundManager.beatHeart();
+        }
+        if (GameServices.getTicks() % 50 == 28) {
+            mSoundManager.step();
         }
     }
 

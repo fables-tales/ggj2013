@@ -20,7 +20,8 @@ public class ObstacleObject implements GameObject {
                 .getDouble("obstacle_width")) {
             PlayerObject.getInstance().rejectMovement();
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
-            PlayerObject.getInstance().HeartBeatParameters.treePulseCount++;
+            PlayerObject.getInstance().HeartBeatParameters.treePulseCount = 0;
+            InputSystem.getInstance().setSlow();
         }
     }
 

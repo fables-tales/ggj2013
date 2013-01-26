@@ -7,10 +7,12 @@ import com.badlogic.gdx.math.Vector2;
 public class InputSystem {
     private static InputSystem sInstance = null;
 
+    private static float mSpeed;
+
     private static final float DEAD_ZONE_SIZE = (float) (1.0f * Constants.sConstants
             .get("dead_zone_size"));
 
-    public InputSystem getInstance() {
+    public static InputSystem getInstance() {
         if (sInstance == null) {
             sInstance = new InputSystem();
         }
@@ -57,10 +59,19 @@ public class InputSystem {
         if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)
                 || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT)) {
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
-            return result.nor().mul(Constants.getFloat("player_sprint_speed"));
+            return result.nor().mul(Constants.getFloat("player_sprint_speed")*mSpeed);
         } else {
-            return result.nor().mul(Constants.getFloat("player_speed"));
+            return result.nor().mul(Constants.getFloat("player_speed")*mSpeed);
         }
 
+    }
+
+    public void setSlow() {
+        System.out.println("slow");
+        mSpeed = Constants.getFloat("tree_slow_speed");
+    }
+
+    public void setNormal() {
+        mSpeed = 1.0f;
     }
 }

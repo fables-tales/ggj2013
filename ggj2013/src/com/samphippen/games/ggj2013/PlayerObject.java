@@ -57,8 +57,10 @@ public class PlayerObject implements GameObject {
         		HeartBeatParameters.elapsedFastPulses++; 
         		HeartBeatParameters.treePulseCount++;   			
     		}
+    		
         	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
         		HeartBeatParameters.setHeartBeatSlow();
+        		InputSystem.getInstance().setNormal();
         		GameHolder.getInstance().whitePulse();
         	}  
     	} else {

@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface GameObject {
     public void update();
-    
-    public List<Renderable> emitRenderable();
+
+    public void emitRenderables(List<Renderable> renderables);
 }

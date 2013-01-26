@@ -13,12 +13,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.samphippen.games.ggj2013.maze.Graph;
 import com.samphippen.games.ggj2013.pathfind.AStarPathFinder;
 import com.samphippen.games.ggj2013.pathfind.ContinuousPathFinder;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
+    private static GameHolder sSharedInstance = null;
+
+    public static GameHolder getInstance() {
+        return sSharedInstance;
+    }
+
     private OrthographicCamera mCamera;
     private SpriteBatch mBatch;
     private SpriteBatch mSpecialBatch;
@@ -26,13 +31,8 @@ public class GameHolder implements ApplicationListener {
 
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
-    private final RenderQueueProxy mQueueProxy = new RenderQueueProxy() {
-        @Override
-        public void add(Renderable renderable) {
-            mToRender.add(renderable);
-        }
-    };
-    private Vector2 mCameraOrigin;
+    private final RenderQueueProxy mQueueProxy = new ListRenderQueueProxy(
+            mToRender);
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
@@ -46,8 +46,14 @@ public class GameHolder implements ApplicationListener {
     private boolean mDrawLose = false;
     private Sprite mLoseSprite;
 
+    public SoundManager getSoundManager() {
+        return mSoundManager;
+    }
+
     @Override
     public void create() {
+        assert sSharedInstance == null : "duplicate GameHolder";
+        sSharedInstance = this;
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //
@@ -132,8 +138,6 @@ public class GameHolder implements ApplicationListener {
         Constants.setConstants();
         mWinSprite = GameServices.loadSprite("winscreen.png");
         mLoseSprite = GameServices.loadSprite("losescreen.png");
-        new Graph(30, 30);
-        setCameraOrigin(new Vector2(0, 0));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
@@ -188,10 +192,6 @@ public class GameHolder implements ApplicationListener {
         mSoundManager = new SoundManager();
     }
 
-    private void setCameraOrigin(Vector2 vector2) {
-        mCameraOrigin = vector2;
-    }
-
     @Override
     public void dispose() {
         mBatch.dispose();
@@ -237,9 +237,6 @@ public class GameHolder implements ApplicationListener {
         mMouse.update();
 
         GameServices.advanceTicks();
-        if (GameServices.getTicks() % 120 == 100) {
-            mSoundManager.beatHeart();
-        }
 
         Sprite endSprite = mPathSprites.get(mPathSprites.size() - 1);
         if (new Vector2(mPlayer.getPosition()).sub(endSprite.getX(),
@@ -265,6 +262,7 @@ public class GameHolder implements ApplicationListener {
         for (GameObject object : mWorldObjects) {
             object.emitRenderables(mQueueProxy);
         }
+        mQueueProxy.commit();
 
         mBatch.begin();
 
@@ -304,9 +302,13 @@ public class GameHolder implements ApplicationListener {
         mShader.setUniform1fv("band_width",
                 new float[] { (float) (1.0f * Constants.sConstants
                         .get("band_width")) }, 0, 1);
-        float mv = 0.6f - (0.6f * (glowRadius));
-        if (mv < 0) mv = 0;
-        if (mv > 0.6f) mv = 0.6f;
+        float mv = 0.6f - 0.6f * glowRadius;
+        if (mv < 0) {
+            mv = 0;
+        }
+        if (mv > 0.6f) {
+            mv = 0.6f;
+        }
         mShader.setUniform1fv("mute", new float[] { mv }, 0, 1);
     }
 

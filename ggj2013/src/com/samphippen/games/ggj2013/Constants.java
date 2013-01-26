@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 
 public class Constants {
+    public static int QUITE_A_LOT = 400000000;
 
     public static Map<String, Double> sConstants = new HashMap<String, Double>();
 

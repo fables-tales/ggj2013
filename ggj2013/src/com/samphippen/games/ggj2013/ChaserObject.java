@@ -42,7 +42,7 @@ public class ChaserObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite));
+        renderQueue.add(new SpriteRenderable(mSprite), (int)mPosition.y);
     }
 
     public Vector2 getPosition() {

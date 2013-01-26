@@ -2,16 +2,26 @@ package com.samphippen.games.ggj2013;
 
 public class HeartBeatParameters {
 
-    private int mMaxRadius = 100;
-    private boolean mFastHeartbeat = false;
+    private int mMaxRadius;
+    private boolean mFastHeartbeat;
+    public int elapsedFastPulses = 0;
+    private final double BIG_RADIUS = Constants.sConstants.get("heartbeat_radius");
+    private final double SMALL_RADIUS = Constants.sConstants.get("heartbeat_fast_radius");
+	private Double mHeartbeat;
     
+	public HeartBeatParameters(){
+	    mMaxRadius = (int) BIG_RADIUS;
+	    mFastHeartbeat = false;
+	}
+	
     public void setHeartBeatFast(){
-    	mMaxRadius  = 40;
+    	elapsedFastPulses = 0;
+    	mMaxRadius  = (int) SMALL_RADIUS;
     	mFastHeartbeat = true;
     }
 
     public void setHeartBeatSlow(){
-    	mMaxRadius  = 100;
+    	mMaxRadius  = (int) BIG_RADIUS;
     	mFastHeartbeat = false;
     }
 
@@ -21,5 +31,9 @@ public class HeartBeatParameters {
 
 	public boolean isFastHeartbeat() {
 		return mFastHeartbeat;
+	}
+	
+	public Double getmHeartbeat() {
+		return mHeartbeat;
 	}
 }

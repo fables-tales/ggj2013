@@ -10,11 +10,8 @@ public class PlayerObject implements GameObject {
     public float mHeartbeatRadius = (float) 1.0;
     private Vector2 mPosition = new Vector2(0,0);
     private int mTicks = 0;
-    private int elapsedFastPulses = 0;
     public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
 
-    private final Double SLOW_HEARTBEAT = Constants.sConstants.get("heartbeat_rate");
-    private final Double FAST_HEARTBEAT = Constants.sConstants.get("heartbeat_increased_rate");
     private final Double NUMPER_FAST_PULSES = Constants.sConstants.get("number_fast_pulses");
 
     private PlayerObject() {
@@ -38,18 +35,17 @@ public class PlayerObject implements GameObject {
     
     public float calculateHeartBeatRadius(){
     	mTicks++;
+        mTicks = mTicks % HeartBeatParameters.getMaxRadius();
+        
     	if (HeartBeatParameters.isFastHeartbeat()){
-        	elapsedFastPulses++;
-        	if(elapsedFastPulses >= NUMPER_FAST_PULSES){
-        		elapsedFastPulses =0;
+    		if(mTicks == 0){
+        		HeartBeatParameters.elapsedFastPulses++;    			
+    		}
+        	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
         		HeartBeatParameters.setHeartBeatSlow();
         	}        	
-            mTicks = mTicks % 100;	
-        	return 300*mTicks/100.0f; 
     	}
-    	else{
-    		return (float)Math.sin(mTicks/SLOW_HEARTBEAT)+1.0f;    		
-    	}    	
+    	return 3 * mTicks; 
     }
     
     public Vector2 getPosition() {

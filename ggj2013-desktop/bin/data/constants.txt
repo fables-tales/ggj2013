@@ -1,9 +1,8 @@
 player_speed 3
 dead_zone_size 0.1
-heartbeat_rate 3
-heartbeat_increased_rate 60
+heartbeat_radius 100
+heartbeat_fast_radius 40
 number_fast_pulses 10
-heartbeat_rate 3
 heartbeat_size 150
 heartbeat_min_size 10
 band_width 20

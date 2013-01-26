@@ -3,27 +3,24 @@ package com.samphippen.games.ggj2013;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class BackgroundObject implements GameObject {
 
-    
-    
     private List<SpriteRenderable> mSpriteRenderables = new ArrayList<SpriteRenderable>();
 
+    private static int K = 100;
+
     public BackgroundObject() {
-        for (int i = 0; i < 10; i++) {
-            float x = 256*i-400-256*5;
-            for (int j = 0; j< 10; j++) {
-                float y = 256*j-300-256*5;
-                Sprite sprite = GameServices.loadSprite("dat-background.png");
-                sprite.setPosition(x, y);
-                SpriteRenderable sr = new SpriteRenderable(sprite);
-                mSpriteRenderables.add(sr);
-            }
-        }
+
+        Sprite sprite = GameServices.makeRepeatSprite("dat-background.png", 256*20, 256*20);
+        sprite.setPosition(-256*10, -256*10);
         
-        
+        SpriteRenderable sr = new SpriteRenderable(sprite);
+        mSpriteRenderables.add(sr);
+
     }
 
     @Override
@@ -36,7 +33,7 @@ public class BackgroundObject implements GameObject {
         for (SpriteRenderable sr : mSpriteRenderables) {
             renderables.add(sr);
         }
-        
+
     }
 
 }

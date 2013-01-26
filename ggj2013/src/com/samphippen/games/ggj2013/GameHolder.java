@@ -8,11 +8,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.maze.Graph;
+import com.samphippen.games.ggj2013.pathfind.AStarPathFinder;
+import com.samphippen.games.ggj2013.pathfind.ContinuousPathFinder;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
@@ -33,8 +36,12 @@ public class GameHolder implements ApplicationListener {
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
+    private List<Sprite> mPathSprites = new ArrayList<Sprite>();
 
     private SoundManager mSoundManager;
+    private SpriteBatch mPathBatch;
+    private boolean mDrawWin = false;
+    private Sprite mWinSprite;
 
     @Override
     public void create() {
@@ -120,6 +127,7 @@ public class GameHolder implements ApplicationListener {
         ShaderProgram.pedantic = false;
 
         Constants.setConstants();
+        mWinSprite = GameServices.loadSprite("winscreen.png");
         new Graph(30, 30);
         setCameraOrigin(new Vector2(0, 0));
         float w = Gdx.graphics.getWidth();
@@ -133,6 +141,7 @@ public class GameHolder implements ApplicationListener {
                     + mShader.getLog());
         }
         mBatch.setShader(mShader);
+        mPathBatch = new SpriteBatch();
         mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
 
@@ -140,10 +149,34 @@ public class GameHolder implements ApplicationListener {
         mMouse = MouseObject.getInstance();
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
+        mWorldObjects.add(new ChaserObject());
         // Add obstacles to the world
         // TODO currently makes one
-        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects);
+        ContinuousPathFinder cpf = new ContinuousPathFinder(
+                new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
+                GameServices.PATH_FINDER_HEIGHT);
+        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
+                cpf);
         obstaclesFactory.makeObstacles();
+        List<Vector2> path = cpf.findPath(
+                GameServices.toPathFinder(mPlayer.getPosition()),
+                GameServices.toPathFinder(new Vector2(1000, 1000)));
+
+        Vector2 prev = mPlayer.getPosition();
+
+        for (Vector2 v : path) {
+            Sprite s = GameServices.loadSprite("mouse.png");
+            v = GameServices.fromPathFinder(v);
+            if (new Vector2(prev).sub(v).len() > 200) {
+                s.setPosition(v.x, v.y);
+                s.setColor(0.3f, 1, 1, 1);
+                mPathSprites.add(s);
+                prev = v;
+
+            }
+        }
+
+        mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
 
         Gdx.input.setCursorCatched(true);
 
@@ -161,9 +194,21 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        update();
-        draw();
+        if (!mDrawWin) {
+            update();
+            draw();
+        } else {
+            drawWin();
+        }
 
+    }
+
+    private void drawWin() {
+        Gdx.input.setCursorCatched(false);
+        mSpecialBatch.begin();
+        mWinSprite.setPosition(-400,-300);
+        mWinSprite.draw(mSpecialBatch);
+        mSpecialBatch.end();
     }
 
     private void update() {
@@ -179,6 +224,12 @@ public class GameHolder implements ApplicationListener {
         GameServices.advanceTicks();
         if (GameServices.getTicks() % 120 == 100) {
             mSoundManager.beatHeart();
+        }
+
+        Sprite endSprite = mPathSprites.get(mPathSprites.size() - 1);
+        if (new Vector2(mPlayer.getPosition()).sub(endSprite.getX(),
+                endSprite.getY()).len() < 40) {
+            mDrawWin = true;
         }
     }
 
@@ -203,6 +254,14 @@ public class GameHolder implements ApplicationListener {
             renderable.draw(mBatch);
         }
         mBatch.end();
+        mPathBatch.setProjectionMatrix(mCamera.combined);
+        mPathBatch.setTransformMatrix(new Matrix4().translate(
+                -getCameraOrigin().x, -getCameraOrigin().y, 0));
+        mPathBatch.begin();
+        for (Sprite s : mPathSprites) {
+            s.draw(mPathBatch);
+        }
+        mPathBatch.end();
 
         mSpecialBatch.setProjectionMatrix(mCamera.combined);
         mSpecialBatch.begin();

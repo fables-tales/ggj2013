@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
@@ -22,7 +23,7 @@ public class Main {
 	}
 	
 	private static void setConstants(){
-		File constantsFile = new File(System.getProperty("user.dir") + "/Constants.txt");
+		File constantsFile = Gdx.files.internal("bin/data/constants.txt").file();
 		System.out.println(constantsFile.getAbsolutePath());
 		FileInputStream fileStream;
 		try {

@@ -59,12 +59,8 @@ public class CampfireSprite implements GameObject {
         mOnSprite = mOnSprites.get(mFrameCount % mOnSprites.size());
         mOffSprite = mOffSprites.get(mFrameCount % mOffSprites.size());
         boolean paniced = GameHolder.getInstance().mPulseG < 0.999;
-        System.out.println(paniced);
-        System.out.println(GameHolder.getInstance().mPulseG);
-        System.out.println(PlayerObject.getInstance().getPosition().dst(mPosition) < 40);
         if (PlayerObject.getInstance().getPosition().dst(mPosition) < 40
                 && !paniced) {
-            System.out.println("off!");
             mOn = false;
         }
     }

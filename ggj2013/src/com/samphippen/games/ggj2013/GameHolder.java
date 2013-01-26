@@ -1,3 +1,4 @@
+
 package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import com.samphippen.games.ggj2013.maze.Graph;
 public class GameHolder implements ApplicationListener {
     private OrthographicCamera mCamera;
     private SpriteBatch mBatch;
+    private BackgroundObject mBackground;
+
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
     private final RenderQueueProxy mQueueProxy = new RenderQueueProxy() {
@@ -36,6 +39,8 @@ public class GameHolder implements ApplicationListener {
         mCamera = new OrthographicCamera(w, h);
         mBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
+        mBackground = new BackgroundObject();
+        mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
     }
 

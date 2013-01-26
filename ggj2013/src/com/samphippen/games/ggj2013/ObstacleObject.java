@@ -18,10 +18,11 @@ public class ObstacleObject implements GameObject {
         if (playerPosition.dst(mSprite.getX() + mSprite.getWidth() / 2 - 16f,
                 mSprite.getY() + mSprite.getHeight() * 0.2f) < Constants
                 .getDouble("obstacle_width")) {
-            mSprite.setColor(0.1f, 1, 0.1f, 1);
             PlayerObject.getInstance().rejectMovement();
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
             GameHolder.getInstance().getSoundManager().thunk();
+            PlayerObject.getInstance().HeartBeatParameters.treePulseCount = 0;
+            InputSystem.getInstance().setSlow();
         }
     }
 

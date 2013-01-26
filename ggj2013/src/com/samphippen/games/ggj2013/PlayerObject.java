@@ -54,24 +54,20 @@ public class PlayerObject implements GameObject {
 
         if (HeartBeatParameters.isFastHeartbeat()) {
             if (mTicks == 0) {
+                HeartBeatParameters.chaserPulseCount++;
                 HeartBeatParameters.elapsedFastPulses++;
+                HeartBeatParameters.treePulseCount++;
             }
+
             if (HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES) {
                 HeartBeatParameters.setHeartBeatSlow();
+                InputSystem.getInstance().setNormal();
                 GameHolder.getInstance().whitePulse();
             }
         } else {
             GameHolder.getInstance().whitePulse();
         }
 
-        if (HeartBeatParameters.isFastHeartbeat()) {
-            if (mTicks == 0) {
-                HeartBeatParameters.elapsedFastPulses++;
-            }
-            if (HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES) {
-                HeartBeatParameters.setHeartBeatSlow();
-            }
-        }
         return (float) (mTicks * incrementTicks);
     }
 

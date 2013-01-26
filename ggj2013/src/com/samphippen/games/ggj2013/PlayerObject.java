@@ -33,6 +33,9 @@ public class PlayerObject implements GameObject {
         mTicks++;
         mHeartbeatRadius = 300 * mTicks / 100.0f;
         mTicks = mTicks % 100;
+        if (mTicks == 0) {
+            GameHolder.getInstance().getSoundManager().beatHeart();
+        }
     }
 
     public Vector2 getPosition() {

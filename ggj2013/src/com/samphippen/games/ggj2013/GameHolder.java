@@ -36,6 +36,10 @@ public class GameHolder implements ApplicationListener {
 
     private SoundManager mSoundManager;
 
+    public SoundManager getSoundManager() {
+        return mSoundManager;
+    }
+
     @Override
     public void create() {
         assert sSharedInstance == null : "duplicate GameHolder";
@@ -173,12 +177,6 @@ public class GameHolder implements ApplicationListener {
         mMouse.update();
 
         GameServices.advanceTicks();
-        if (GameServices.getTicks() % 120 == 100) {
-            mSoundManager.beatHeart();
-        }
-        if (GameServices.getTicks() % 50 == 28) {
-            mSoundManager.step();
-        }
     }
 
     private void draw() {

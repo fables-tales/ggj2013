@@ -53,6 +53,8 @@ public class GameHolder implements ApplicationListener {
 
     private static final int NLIGHTS = 8;
     private final LightManager mLightManager = new LightManager();
+    private int mGuardFrames;
+    private int mFirstPulseCounter;
 
     public SoundManager getSoundManager() {
         return mSoundManager;
@@ -275,7 +277,7 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin && !mDrawLose && !mSplash ) {
+        if (!mDrawWin && !mDrawLose && !mSplash) {
             update();
             draw();
         } else if (mDrawWin) {
@@ -290,7 +292,7 @@ public class GameHolder implements ApplicationListener {
 
     private void drawSplash() {
         mSpecialBatch.begin();
-        mSplashSprite .setPosition(0, 0);
+        mSplashSprite.setPosition(0, 0);
         mSplashSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ENTER)) {
@@ -318,6 +320,7 @@ public class GameHolder implements ApplicationListener {
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             System.exit(1);
         }
+        mGuardFrames -= 1;
         for (GameObject o : mWorldObjects) {
             o.update();
         }
@@ -378,20 +381,28 @@ public class GameHolder implements ApplicationListener {
     private void setShaderValues() {
         float glowRadius = mPlayer.mHeartbeatRadius;
         float maxGlowRadius = 300;
-        mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
+        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0 && mPlayer.HeartBeatParameters.isFastHeartbeat()) {
+            System.out.println("sup");
+            glowRadius *= 3;
+            maxGlowRadius *= 3;
+        }
+        mShader.setUniform1fv("glow_radius", new float[] { glowRadius
+                * (1) }, 0, 1);
+
         mShader.setUniform1fv("channel_r", new float[] { mPulseR }, 0, 1);
         mShader.setUniform1fv("channel_g", new float[] { mPulseG }, 0, 1);
         mShader.setUniform1fv("channel_b", new float[] { mPulseB }, 0, 1);
-        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius },
-                0, 1);
+        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius
+                * ( 1) }, 0, 1);
+        
         mShader.setUniform1fv("radial_a",
-                new float[] { (float) (1.0f * Constants.sConstants
+                new float[] { (float) ((1) * Constants.sConstants
                         .get("radial_lighting_a")) }, 0, 1);
         mShader.setUniform1fv("radial_b",
-                new float[] { (float) (1.0f * Constants.sConstants
+                new float[] { (float) ((1) * Constants.sConstants
                         .get("radial_lighting_b")) }, 0, 1);
         mShader.setUniform1fv("band_width",
-                new float[] { (float) (1.0f * Constants.sConstants
+                new float[] { (float) ((1) * Constants.sConstants
                         .get("band_width")) }, 0, 1);
         float mv = 0.6f - 0.6f * glowRadius;
         if (mv < 0) {
@@ -450,7 +461,7 @@ public class GameHolder implements ApplicationListener {
         } else {
             mPulseG = 1.0f;
         }
-        
+
         if (mPulseB < 1.0) {
             mPulseB += Constants.getFloat("red_decay_rate");
         } else {

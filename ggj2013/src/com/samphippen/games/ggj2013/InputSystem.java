@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 public class InputSystem {
     private static InputSystem sInstance = null;
 
-    private static float mSpeed;
+    private static float mSpeed = 1.0f;
 
     private static final float DEAD_ZONE_SIZE = (float) (1.0f * Constants.sConstants
             .get("dead_zone_size"));

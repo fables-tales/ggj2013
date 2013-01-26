@@ -87,13 +87,13 @@ public class GameHolder implements ApplicationListener {
                 -getCameraOrigin().y, 0));
 
         mToRender.clear();
-        for (GameObject o : mWorldObjects) {
-            o.emitRenderables(mQueueProxy);
+        for (GameObject object : mWorldObjects) {
+            object.emitRenderables(mQueueProxy);
         }
 
         mBatch.begin();
-        for (Renderable r : mToRender) {
-            r.draw(mBatch);
+        for (Renderable renderable : mToRender) {
+            renderable.draw(mBatch);
         }
         mBatch.end();
         

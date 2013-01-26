@@ -5,21 +5,19 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ObstacleObject implements GameObject {
 
-	private double PLAYER_DISTANCE_FROM_OBSTRUCTION = Constants.sConstants.get("PLAYER_DISTANCE_FROM_OBSTRUCTION");
-	private Sprite mSprite = GameServices.loadSprite("color.png");
+	private Sprite mSprite;
 	
 	public ObstacleObject(Vector2 position)
 	{
-		mSprite.setColor(255, 255, 1, 255);
-		mSprite.setOrigin(position.x, position.y);
+		mSprite =  GameServices.loadSprite("color.png");
+		mSprite.setPosition(position.x, position.y);
 	}
 	
 	@Override
 	public void update() {
-        mSprite.setColor(255, 1, 1, 255);
         Vector2 playerPosition = PlayerObject.getInstance().getPosition();
-        if(playerPosition.dst(mSprite.getOriginX(), mSprite.getOriginY()) < PLAYER_DISTANCE_FROM_OBSTRUCTION){
-    		mSprite.setColor(255, 1, 1, 255);
+        if(playerPosition.dst(mSprite.getX(), mSprite.getY()) < mSprite.getWidth()){
+    		mSprite.setColor(0.1f, 1, 0.1f, 1);
         }
 	}
 

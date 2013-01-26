@@ -1,3 +1,5 @@
-PLAYER_DISTANCE_FROM_OBSTRUCTION 10
-SPEED, 20
-SIZE, 80
+player_speed 3
+dead_zone_size 0.1
+heartbeat_rate 30
+heartbeat_size 150
+heartbeat_min_size 10

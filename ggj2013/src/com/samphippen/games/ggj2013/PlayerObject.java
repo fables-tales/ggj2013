@@ -9,7 +9,10 @@ public class PlayerObject implements GameObject {
 
     private Sprite mSprite = null;
     
+    public float mHeartbeatRadius = (float) 1.0;
+    
     private Vector2 mPosition = new Vector2(0,0);
+    private int mTicks = 0;
 
     private PlayerObject() {
         mSprite = GameServices.loadSprite("color.png");
@@ -25,8 +28,10 @@ public class PlayerObject implements GameObject {
 
     @Override
     public void update() {
-        mPosition.add(0.1f, 0f);
+        mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
+        mTicks++;
+        mHeartbeatRadius = (float)Math.sin(mTicks/Constants.sConstants.get("heartbeat_rate"))+1.0f;
     }
     
     public Vector2 getPosition() {

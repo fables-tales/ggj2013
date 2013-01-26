@@ -16,6 +16,12 @@ public class GameHolder implements ApplicationListener {
     private SpriteBatch mBatch;
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
+    private final RenderQueueProxy mQueueProxy = new RenderQueueProxy() {
+        @Override
+        public void add(Renderable renderable) {
+            mToRender.add(renderable);
+        }
+    };
     private Vector2 mCameraOrigin;
     private PlayerObject mPlayer;
 
@@ -61,7 +67,7 @@ public class GameHolder implements ApplicationListener {
 
         mToRender.clear();
         for (GameObject o : mWorldObjects) {
-            o.emitRenderables(mToRender);
+            o.emitRenderables(mQueueProxy);
         }
 
         mBatch.begin();

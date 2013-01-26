@@ -45,6 +45,9 @@ public class GameHolder implements ApplicationListener {
     private ChaserObject mChaser;
     private boolean mDrawLose = false;
     private Sprite mLoseSprite;
+    private float mPulseR = 1.0f;
+    private float mPulseB = 1.0f;
+    private float mPulseG = 1.0f;
 
     public SoundManager getSoundManager() {
         return mSoundManager;
@@ -87,6 +90,9 @@ public class GameHolder implements ApplicationListener {
                 + "uniform float mute;"
                 + "uniform float radial_a;"
                 + "uniform float radial_b;"
+                + "uniform float channel_r;"
+                + "uniform float channel_g;"
+                + "uniform float channel_b;"
                 + "uniform float band_width;"
                 + "void main()\n"//
                 + "{\n" //
@@ -121,15 +127,15 @@ public class GameHolder implements ApplicationListener {
                 + "     lightness += per*0.1;"
                 + "  }"
                 // TODO change to 0.1
-                //+ " if (lightness < 1.0) lightness = 1.0;"
+                // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.1) lightness = 0.1;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
                 + "     float intensity = 0.3 * gl_FragColor[0] + 0.59 * gl_FragColor[1] + 0.11 * gl_FragColor[2];"
-                + "     gl_FragColor[0] = intensity * mute + gl_FragColor[0] * (1.0 - mute);"
-                + "     gl_FragColor[1] = intensity * mute + gl_FragColor[1] * (1.0 - mute);"
-                + "     gl_FragColor[2] = intensity * mute + gl_FragColor[2] * (1.0 - mute);"
+                + "     gl_FragColor[0] = (intensity * mute + gl_FragColor[0] * (1.0 - mute))*channel_r;"
+                + "     gl_FragColor[1] = (intensity * mute + gl_FragColor[1] * (1.0 - mute))*channel_g;"
+                + "     gl_FragColor[2] = (intensity * mute + gl_FragColor[2] * (1.0 - mute))*channel_b;"
                 + "  }" + "  gl_FragColor[3] = tmp;"
 
                 + "}";
@@ -189,7 +195,8 @@ public class GameHolder implements ApplicationListener {
         for (Vector2 v : path) {
             Sprite s = GameServices.loadSprite("mouse.png");
             v = GameServices.fromPathFinder(v);
-            if (new Vector2(prev).sub(v).len() > Constants.sConstants.get("waypoint_spacing")) {
+            if (new Vector2(prev).sub(v).len() > Constants.sConstants
+                    .get("waypoint_spacing")) {
                 s.setPosition(v.x, v.y);
                 s.setColor(0.3f, 1, 1, 1);
                 mPathSprites.add(s);
@@ -203,6 +210,7 @@ public class GameHolder implements ApplicationListener {
         Gdx.input.setCursorCatched(true);
 
         mSoundManager = new SoundManager();
+        whitePulse();
     }
 
     @Override
@@ -304,6 +312,9 @@ public class GameHolder implements ApplicationListener {
         float glowRadius = mPlayer.mHeartbeatRadius;
         float maxGlowRadius = 300;
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
+        mShader.setUniform1fv("channel_r", new float[] { mPulseR }, 0, 1);
+        mShader.setUniform1fv("channel_g", new float[] { mPulseG }, 0, 1);
+        mShader.setUniform1fv("channel_b", new float[] { mPulseB }, 0, 1);
         mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius },
                 0, 1);
         mShader.setUniform1fv("radial_a",
@@ -339,5 +350,23 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void resume() {
+    }
+
+    public void redPulse() {
+        mPulseR = 1.0f;
+        mPulseG = 0.3f;
+        mPulseB = 0.3f;
+    }
+
+    public void whitePulse() {
+        mPulseR = 1f;
+        if (mPulseG < 1.0) {
+            System.out.println(mPulseG);
+            mPulseG += 0.05f;
+        }
+        if (mPulseB < 1.0) {
+            mPulseB += 0.05f;
+            System.out.println(mPulseB);
+        }
     }
 }

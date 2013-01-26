@@ -17,7 +17,7 @@ public class ObstaclesFactory {
     }
 
     public void makeObstacles() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 0; i++) {
             Vector2 obstaclePosition = new Vector2();
             obstaclePosition.set(GameServices.sRng.nextFloat()*4000-2000, GameServices.sRng.nextFloat()*4000-2000);
             ObstacleObject obstacle = new ObstacleObject(obstaclePosition);

@@ -47,7 +47,10 @@ public class PlayerObject implements GameObject {
     		}
         	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
         		HeartBeatParameters.setHeartBeatSlow();
+        		GameHolder.getInstance().whitePulse();
         	}        	
+    	} else {
+    	    GameHolder.getInstance().whitePulse();
     	}
     	return 3 * mTicks; 
     }

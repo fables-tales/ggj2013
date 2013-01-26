@@ -14,4 +14,4 @@ chaser_reappear_delay 2
 chaser_reappear_extra_random_delay 4
 waypoint_spacing 200
 chaser_spawn_random_radius 200
-chaser_spawn_constant_spawn_radius 20
+chaser_spawn_constant_spawn_radius 200

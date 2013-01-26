@@ -24,9 +24,14 @@ public class ChaserObject implements GameObject {
         if (delta.len() > 200) {
             mOutOfLight++;
         } else if (GameServices.getTicks() % 1 == 0) {
-            mPosition.add(delta.mul(0.01f));
+            mPosition.add(delta.mul((float) (1.0f * Constants.sConstants
+                    .get("chaser_speed"))));
         }
-        if (mOutOfLight >= 2 * 60 + GameServices.sRng.nextInt(60 * 4)) {
+        if (mOutOfLight >= (float) (1.0f * Constants.sConstants
+                .get("chaser_reappear_delay"))
+                * 60
+                + GameServices.sRng.nextInt((int) (60 * Constants.sConstants
+                        .get("chaser_reappear_extra_random_delay")))) {
             mOutOfLight = 0;
             float theta = (float) (GameServices.sRng.nextFloat() * Math.PI * 2);
             float radius = GameServices.sRng.nextFloat() * 200 + 20;
@@ -42,7 +47,7 @@ public class ChaserObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite), (int)mPosition.y);
+        renderQueue.add(new SpriteRenderable(mSprite), (int) mPosition.y);
     }
 
     public Vector2 getPosition() {

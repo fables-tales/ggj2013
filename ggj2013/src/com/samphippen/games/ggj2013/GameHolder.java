@@ -40,8 +40,8 @@ public class GameHolder implements ApplicationListener {
         mBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
         mBackground = new BackgroundObject();
-        mWorldObjects.add(mPlayer);
         mWorldObjects.add(mBackground);
+        mWorldObjects.add(mPlayer);
     }
 
     private void setCameraOrigin(Vector2 vector2) {

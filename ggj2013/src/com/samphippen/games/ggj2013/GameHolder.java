@@ -69,6 +69,8 @@ public class GameHolder implements ApplicationListener {
                 + "uniform sampler2D u_texture;\n" //
                 + "uniform float glow_radius;"
                 + "uniform float mute;"
+                + "uniform float radial_a;"
+                + "uniform float radial_b;"
                 + "uniform float band_width;"
                 + "void main()\n"//
                 + "{\n" //
@@ -86,7 +88,7 @@ public class GameHolder implements ApplicationListener {
                 + "  float g = gl_FragColor[1];"
                 + "  float b = gl_FragColor[2];"
                 + "  float k = -1.0;"
-                + "  float current_radius = sqrt(dx * dx + dy * dy);" 
+                + "  float current_radius = sqrt(dx * dx + dy * dy);"
                 + "  if (current_radius < glow_radius && current_radius > glow_radius - band_width) {"
                 + "     float into = (glow_radius-current_radius)/(band_width); "
                 + "     float per = (into < 0.5) ? into * 2.0 : (1.0-into)*2.0; "
@@ -99,7 +101,7 @@ public class GameHolder implements ApplicationListener {
                 + "    gl_FragColor[2] = b;"
                 + "    uselight = 1.0;"
                 + "  } else if (dx * dx + dy * dy < 200000.0) {"
-                + "     float per = 140000.0/(abs(dx*dx)+abs(dy*dy)+30000.0);"
+                + "     float per = radial_a/(abs(dx*dx)+abs(dy*dy)+radial_b);"
                 + "     lightness += per*0.1;"
                 + "  }"
                 // change to 0.1
@@ -213,7 +215,14 @@ public class GameHolder implements ApplicationListener {
         float glowRadius = mPlayer.mHeartbeatRadius;
         float maxGlowRadius = 300;
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
-        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius }, 0, 1);
+        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius },
+                0, 1);
+        mShader.setUniform1fv("radial_a",
+                new float[] { (float) (1.0f * Constants.sConstants
+                        .get("radial_lighting_a")) }, 0, 1);
+        mShader.setUniform1fv("radial_b",
+                new float[] { (float) (1.0f * Constants.sConstants
+                        .get("radial_lighting_b")) }, 0, 1);
         mShader.setUniform1fv("band_width",
                 new float[] { (float) (1.0f * Constants.sConstants
                         .get("band_width")) }, 0, 1);

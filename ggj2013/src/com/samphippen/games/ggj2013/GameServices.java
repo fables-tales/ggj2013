@@ -13,8 +13,7 @@ public class GameServices {
     }
     
     public static Sprite loadSprite(String spriteName) {
-        Sprite s = new Sprite(new Texture(Gdx.files.internal("bin/data/" + spriteName)));
-        return s;
+        return new Sprite(new Texture(Gdx.files.internal("bin/data/" + spriteName)));
     }
     
     public static Random sRng = new Random();

@@ -22,7 +22,7 @@ public class SoundManager {
     public SoundManager() {
         if (!DISABLE_HEARTBEAT) {
             mHeartBeat = Gdx.audio.newSound(Gdx.files
-                    .internal("bin/data/heartbeat.wav"));
+                    .internal("bin/data/heartbeat-excited.wav"));
         } else {
             mHeartBeat = null;
         }

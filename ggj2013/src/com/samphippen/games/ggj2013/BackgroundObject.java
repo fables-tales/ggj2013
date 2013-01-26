@@ -12,9 +12,10 @@ public class BackgroundObject implements GameObject {
     private static int K = 100;
 
     public BackgroundObject() {
-        Sprite sprite = GameServices.makeRepeatSprite("dat-background.png", 256*20, 256*20);
-        sprite.setPosition(-256*10, -256*10);
-        
+        Sprite sprite = GameServices.makeRepeatSprite("dat-background.png",
+                256 * 20, 256 * 20);
+        sprite.setPosition(-256 * 10, -256 * 10);
+
         SpriteRenderable sr = new SpriteRenderable(sprite);
         mSpriteRenderables.add(sr);
 

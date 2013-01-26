@@ -16,25 +16,28 @@ public abstract class GameServices {
     public static float PATH_FINDER_HEIGHT = 6000;
 
     private static long tickCount = 0;
-    
+
     public static Vector2 toPathFinder(Vector2 realPosition) {
-        return new Vector2(realPosition).add(WIDTH/2, HEIGHT/2);
+        return new Vector2(realPosition).add(PATH_FINDER_WIDTH / 2,
+                PATH_FINDER_WIDTH / 2);
     }
-    
+
     public static Vector2 fromPathFinder(Vector2 pathFinderPosition) {
-        return new Vector2(pathFinderPosition).sub(WIDTH/2, HEIGHT/2);
+        return new Vector2(pathFinderPosition).sub(PATH_FINDER_WIDTH / 2,
+                PATH_FINDER_WIDTH / 2);
     }
 
     public static Sprite loadSprite(String spriteName) {
         return new Sprite(new Texture(Gdx.files.internal("bin/data/"
                 + spriteName)));
     }
-    
-    public static Sprite makeRepeatSprite(String spriteName, int width, int height) {
+
+    public static Sprite makeRepeatSprite(String spriteName, int width,
+            int height) {
         Texture t = new Texture(Gdx.files.internal("bin/data/" + spriteName));
         t.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
         Sprite s = new Sprite(t);
-        s.setRegion(0,0,width,height);
+        s.setRegion(0, 0, width, height);
         s.setSize(width, height);
         return s;
     }

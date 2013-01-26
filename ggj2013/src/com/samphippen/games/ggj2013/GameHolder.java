@@ -42,6 +42,9 @@ public class GameHolder implements ApplicationListener {
     private SpriteBatch mPathBatch;
     private boolean mDrawWin = false;
     private Sprite mWinSprite;
+    private ChaserObject mChaser;
+    private boolean mDrawLose = false;
+    private Sprite mLoseSprite;
 
     @Override
     public void create() {
@@ -128,6 +131,7 @@ public class GameHolder implements ApplicationListener {
 
         Constants.setConstants();
         mWinSprite = GameServices.loadSprite("winscreen.png");
+        mLoseSprite = GameServices.loadSprite("losescreen.png");
         new Graph(30, 30);
         setCameraOrigin(new Vector2(0, 0));
         float w = Gdx.graphics.getWidth();
@@ -147,9 +151,10 @@ public class GameHolder implements ApplicationListener {
 
         mBackground = new BackgroundObject();
         mMouse = MouseObject.getInstance();
+        mChaser = new ChaserObject();
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
-        mWorldObjects.add(new ChaserObject());
+        mWorldObjects.add(mChaser);
         // Add obstacles to the world
         // TODO currently makes one
         ContinuousPathFinder cpf = new ContinuousPathFinder(
@@ -194,13 +199,23 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin) {
+        if (!mDrawWin && !mDrawLose) {
             update();
             draw();
-        } else {
+        } else if (mDrawWin) {
             drawWin();
+        } else if (mDrawLose) {
+            drawLose();
         }
 
+    }
+
+    private void drawLose() {
+        Gdx.input.setCursorCatched(false);
+        mSpecialBatch.begin();
+        mLoseSprite.setPosition(-400,-300);
+        mLoseSprite.draw(mSpecialBatch);
+        mSpecialBatch.end();
     }
 
     private void drawWin() {
@@ -230,6 +245,10 @@ public class GameHolder implements ApplicationListener {
         if (new Vector2(mPlayer.getPosition()).sub(endSprite.getX(),
                 endSprite.getY()).len() < 40) {
             mDrawWin = true;
+        }
+        
+        if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < 40) {
+            mDrawLose  = true;
         }
     }
 

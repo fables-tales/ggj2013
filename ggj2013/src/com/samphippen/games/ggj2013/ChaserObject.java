@@ -45,4 +45,8 @@ public class ChaserObject implements GameObject {
         renderQueue.add(new SpriteRenderable(mSprite));
     }
 
+    public Vector2 getPosition() {
+        return mPosition;
+    }
+
 }

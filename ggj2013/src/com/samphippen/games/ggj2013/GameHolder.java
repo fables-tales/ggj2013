@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.maze.Graph;
+import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
     private OrthographicCamera mCamera;
@@ -32,6 +33,8 @@ public class GameHolder implements ApplicationListener {
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
+
+    private SoundManager mSoundManager;
 
     @Override
     public void create() {
@@ -120,13 +123,14 @@ public class GameHolder implements ApplicationListener {
         mBatch = new SpriteBatch();
 
         mShader = new ShaderProgram(vertexShader, fragmentShader);
-        if (!mShader.isCompiled())
+        if (!mShader.isCompiled()) {
             throw new IllegalArgumentException("couldn't compile shader: "
                     + mShader.getLog());
+        }
         mBatch.setShader(mShader);
         mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
-        
+
         mBackground = new BackgroundObject();
         mMouse = MouseObject.getInstance();
         mWorldObjects.add(mBackground);
@@ -135,8 +139,10 @@ public class GameHolder implements ApplicationListener {
         // TODO currently makes one
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects);
         obstaclesFactory.makeObstacles();
-        
+
         Gdx.input.setCursorCatched(true);
+
+        mSoundManager = new SoundManager();
     }
 
     private void setCameraOrigin(Vector2 vector2) {
@@ -164,6 +170,11 @@ public class GameHolder implements ApplicationListener {
         }
 
         mMouse.update();
+
+        GameServices.advanceTicks();
+        if (GameServices.getTicks() % 120 == 100) {
+            mSoundManager.beatHeart();
+        }
     }
 
     private void draw() {
@@ -197,11 +208,16 @@ public class GameHolder implements ApplicationListener {
 
     private void setShaderValues() {
         float glowRadius = (float) (Constants.sConstants.get("heartbeat_size")
-                * mPlayer.mHeartbeatRadius + Constants.sConstants.get("heartbeat_min_size"));
+                * mPlayer.mHeartbeatRadius + Constants.sConstants
+                .get("heartbeat_min_size"));
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
-        float mv = 0.6f - (0.6f * (glowRadius));
-        if (mv < 0) mv = 0;
-        if (mv > 0.6f) mv = 0.6f;
+        float mv = 0.6f - 0.6f * glowRadius;
+        if (mv < 0) {
+            mv = 0;
+        }
+        if (mv > 0.6f) {
+            mv = 0.6f;
+        }
         mShader.setUniform1fv("mute", new float[] { mv }, 0, 1);
     }
 

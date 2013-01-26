@@ -19,8 +19,7 @@ public class Constants {
         FileInputStream fileStream;
         try {
             fileStream = new FileInputStream(constantsFile);
-            ConstantsReader constantsReader = new ConstantsReader();
-            constantsReader.readConstants(fileStream);
+            ConstantsReader.readConstants(fileStream);
         } catch (FileNotFoundException missingFileException) {
             missingFileException.printStackTrace();
         }

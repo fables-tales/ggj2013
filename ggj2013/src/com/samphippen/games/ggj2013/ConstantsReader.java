@@ -4,13 +4,12 @@ import java.io.FileInputStream;
 import java.util.Scanner;
 
 public class ConstantsReader {
-
-	public void readConstants(FileInputStream fileStream){
-		Scanner scanner = new Scanner(fileStream);
-		while (scanner.hasNext()) {
-    		String key = scanner.next();
-    		double value = Double.parseDouble(scanner.next());
-    		Constants.sConstants.put(key, value);
-		}
-	}
+    public static void readConstants(FileInputStream fileStream) {
+        Scanner scanner = new Scanner(fileStream);
+        while (scanner.hasNext()) {
+            String key = scanner.next();
+            double value = Double.parseDouble(scanner.next());
+            Constants.sConstants.put(key, value);
+        }
+    }
 }

@@ -48,6 +48,8 @@ public class GameHolder implements ApplicationListener {
     private float mPulseR = 1.0f;
     private float mPulseB = 1.0f;
     private float mPulseG = 1.0f;
+    private boolean mSplash = true;
+    private Sprite mSplashSprite;
 
     private static final int NLIGHTS = 8;
     private final LightManager mLightManager = new LightManager();
@@ -184,6 +186,7 @@ public class GameHolder implements ApplicationListener {
         Constants.setConstants();
         mWinSprite = GameServices.loadSprite("winscreen.png");
         mLoseSprite = GameServices.loadSprite("losescreen.png");
+        mSplashSprite = GameServices.loadSprite("splashscreen.png");
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
@@ -272,15 +275,27 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin && !mDrawLose) {
+        if (!mDrawWin && !mDrawLose && !mSplash ) {
             update();
             draw();
         } else if (mDrawWin) {
             drawWin();
         } else if (mDrawLose) {
             drawLose();
+        } else if (mSplash) {
+            drawSplash();
         }
 
+    }
+
+    private void drawSplash() {
+        mSpecialBatch.begin();
+        mSplashSprite .setPosition(0, 0);
+        mSplashSprite.draw(mSpecialBatch);
+        mSpecialBatch.end();
+        if (Gdx.input.isKeyPressed(Keys.ENTER)) {
+            mSplash = false;
+        }
     }
 
     private void drawLose() {
@@ -431,11 +446,15 @@ public class GameHolder implements ApplicationListener {
         mPulseR = 1f;
         if (mPulseG < 1.0) {
             System.out.println(mPulseG);
-            mPulseG += 0.05f;
+            mPulseG += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseG = 1.0f;
         }
+        
         if (mPulseB < 1.0) {
-            mPulseB += 0.05f;
-            System.out.println(mPulseB);
+            mPulseB += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseB = 1.0f;
         }
     }
 }

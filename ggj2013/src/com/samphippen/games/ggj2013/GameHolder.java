@@ -29,7 +29,6 @@ public class GameHolder implements ApplicationListener {
             mToRender.add(renderable);
         }
     };
-    private Vector2 mCameraOrigin;
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
@@ -121,7 +120,6 @@ public class GameHolder implements ApplicationListener {
 
         Constants.setConstants();
         new Graph(30, 30);
-        setCameraOrigin(new Vector2(0, 0));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
@@ -148,10 +146,6 @@ public class GameHolder implements ApplicationListener {
         Gdx.input.setCursorCatched(true);
 
         mSoundManager = new SoundManager();
-    }
-
-    private void setCameraOrigin(Vector2 vector2) {
-        mCameraOrigin = vector2;
     }
 
     @Override
@@ -226,9 +220,13 @@ public class GameHolder implements ApplicationListener {
         mShader.setUniform1fv("band_width",
                 new float[] { (float) (1.0f * Constants.sConstants
                         .get("band_width")) }, 0, 1);
-        float mv = 0.6f - (0.6f * (glowRadius));
-        if (mv < 0) mv = 0;
-        if (mv > 0.6f) mv = 0.6f;
+        float mv = 0.6f - 0.6f * glowRadius;
+        if (mv < 0) {
+            mv = 0;
+        }
+        if (mv > 0.6f) {
+            mv = 0.6f;
+        }
         mShader.setUniform1fv("mute", new float[] { mv }, 0, 1);
     }
 

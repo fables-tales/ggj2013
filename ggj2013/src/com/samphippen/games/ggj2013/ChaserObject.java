@@ -20,7 +20,7 @@ public class ChaserObject implements GameObject {
     @Override
     public void update() {
         PlayerObject player = PlayerObject.getInstance();
-        if (player.getPosition().len() > 400) {
+        if (player.getPosition().len() > Constants.getFloat("safe_zone_size")) {
             Vector2 playerPosition = player.getPosition();
 
             Vector2 delta = new Vector2(playerPosition).sub(mPosition);

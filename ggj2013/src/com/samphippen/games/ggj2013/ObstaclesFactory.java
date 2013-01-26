@@ -22,10 +22,13 @@ public class ObstaclesFactory {
         float density = Constants.getFloat("obstacle_density");
         for (int i = 0; i < (int) (density * OBSTACLE_FIELD_SIZE * OBSTACLE_FIELD_SIZE); i++) {
             Vector2 obstaclePosition = new Vector2();
-            obstaclePosition.set(GameServices.sRng.nextFloat()
-                    * OBSTACLE_FIELD_SIZE - 0.5f * OBSTACLE_FIELD_SIZE,
-                    GameServices.sRng.nextFloat() * OBSTACLE_FIELD_SIZE - 0.5f
-                            * OBSTACLE_FIELD_SIZE);
+            while (obstaclePosition.len() < Constants
+                    .getFloat("safe_zone_size")) {
+                obstaclePosition.set(GameServices.sRng.nextFloat()
+                        * OBSTACLE_FIELD_SIZE - 0.5f * OBSTACLE_FIELD_SIZE,
+                        GameServices.sRng.nextFloat() * OBSTACLE_FIELD_SIZE
+                                - 0.5f * OBSTACLE_FIELD_SIZE);
+            }
             ObstacleObject obstacle = new ObstacleObject(obstaclePosition);
 
             mWorldObjects.add(obstacle);

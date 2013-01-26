@@ -19,3 +19,4 @@ chaser_spawn_random_radius 200
 chaser_spawn_constant_spawn_radius 200
 end_point_distance_min 1000
 end_point_distance_max 1500
+safe_zone_size 400

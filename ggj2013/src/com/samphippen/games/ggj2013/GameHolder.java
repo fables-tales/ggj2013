@@ -151,7 +151,7 @@ public class GameHolder implements ApplicationListener {
                 + "  if (current_radius < glow_radius && current_radius > glow_radius - band_width) {"
                 + "     float into = (glow_radius-current_radius)/(band_width); "
                 + "     float per = (into < 0.5) ? into * 2.0 : (1.0-into)*2.0; "
-                + "     lightness += per*(1.0-(glow_radius/300.0));"
+                + "     lightness += clamp(per*(1.0-(glow_radius/300.0)), 0.0, 1.0);"
                 + "  }"
                 + "  centerX = 400.0; centerY = 300.0; dx = fx-centerX; dy = fy-centerY;"
                 + "  if (dx * dx + dy * dy < 0.0) {"
@@ -392,28 +392,29 @@ public class GameHolder implements ApplicationListener {
     private void setShaderValues() {
         float glowRadius = mPlayer.mHeartbeatRadius;
         float maxGlowRadius = 300;
-        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0 && mPlayer.HeartBeatParameters.isFastHeartbeat()) {
+        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0
+                && mPlayer.HeartBeatParameters.isFastHeartbeat()) {
             System.out.println("sup");
             glowRadius *= 3;
             maxGlowRadius *= 3;
         }
-        mShader.setUniform1fv("glow_radius", new float[] { glowRadius
-                * (1) }, 0, 1);
+        mShader.setUniform1fv("glow_radius", new float[] { glowRadius * 1 }, 0,
+                1);
 
         mShader.setUniform1fv("channel_r", new float[] { mPulseR }, 0, 1);
         mShader.setUniform1fv("channel_g", new float[] { mPulseG }, 0, 1);
         mShader.setUniform1fv("channel_b", new float[] { mPulseB }, 0, 1);
-        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius
-                * ( 1) }, 0, 1);
-        
+        mShader.setUniform1fv("max_glow_radius",
+                new float[] { maxGlowRadius * 1 }, 0, 1);
+
         mShader.setUniform1fv("radial_a",
-                new float[] { (float) ((1) * Constants.sConstants
+                new float[] { (float) (1 * Constants.sConstants
                         .get("radial_lighting_a")) }, 0, 1);
         mShader.setUniform1fv("radial_b",
-                new float[] { (float) ((1) * Constants.sConstants
+                new float[] { (float) (1 * Constants.sConstants
                         .get("radial_lighting_b")) }, 0, 1);
         mShader.setUniform1fv("band_width",
-                new float[] { (float) ((1) * Constants.sConstants
+                new float[] { (float) (1 * Constants.sConstants
                         .get("band_width")) }, 0, 1);
         float mv = 0.6f - 0.6f * glowRadius;
         if (mv < 0) {

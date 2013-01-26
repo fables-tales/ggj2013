@@ -69,6 +69,9 @@ public class GameHolder implements ApplicationListener {
                 + "uniform sampler2D u_texture;\n" //
                 + "uniform float glow_radius;"
                 + "uniform float mute;"
+                + "uniform float radial_a;"
+                + "uniform float radial_b;"
+                + "uniform float band_width;"
                 + "void main()\n"//
                 + "{\n" //
                 + "  float centerX = 400.0;"
@@ -85,9 +88,11 @@ public class GameHolder implements ApplicationListener {
                 + "  float g = gl_FragColor[1];"
                 + "  float b = gl_FragColor[2];"
                 + "  float k = -1.0;"
-                + "  if (dx * dx + dy * dy < 10000000.0) {"
-                + "     float per = (glow_radius+100.0)/(dx*dx+dy*dy); "
-                + "     lightness += per;"
+                + "  float current_radius = sqrt(dx * dx + dy * dy);"
+                + "  if (current_radius < glow_radius && current_radius > glow_radius - band_width) {"
+                + "     float into = (glow_radius-current_radius)/(band_width); "
+                + "     float per = (into < 0.5) ? into * 2.0 : (1.0-into)*2.0; "
+                + "     lightness += per*(1.0-(glow_radius/300.0));"
                 + "  }"
                 + "  centerX = 400.0; centerY = 300.0; dx = fx-centerX; dy = fy-centerY;"
                 + "  if (dx * dx + dy * dy < 0.0) {"
@@ -96,11 +101,12 @@ public class GameHolder implements ApplicationListener {
                 + "    gl_FragColor[2] = b;"
                 + "    uselight = 1.0;"
                 + "  } else if (dx * dx + dy * dy < 200000.0) {"
-                + "     float per = (1.0-mute) * 2000.0/(abs(dx*dx)+abs(dy*dy)); per *= 1.2;"
-                + "     lightness += per*0.0;"
+                + "     float per = radial_a/(abs(dx*dx)+abs(dy*dy)+radial_b);"
+                + "     lightness += per*0.1;"
                 + "  }"
                 // TODO change to 0.1
                 + " if (lightness < 1.0) lightness = 1.0;"
+               // + " if (lightness < 0.1) lightness = 0.1;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
@@ -207,17 +213,23 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void setShaderValues() {
-        float glowRadius = (float) (Constants.sConstants.get("heartbeat_size")
-                * mPlayer.mHeartbeatRadius + Constants.sConstants
-                .get("heartbeat_min_size"));
+        float glowRadius = mPlayer.mHeartbeatRadius;
+        float maxGlowRadius = 300;
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
-        float mv = 0.6f - 0.6f * glowRadius;
-        if (mv < 0) {
-            mv = 0;
-        }
-        if (mv > 0.6f) {
-            mv = 0.6f;
-        }
+        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius },
+                0, 1);
+        mShader.setUniform1fv("radial_a",
+                new float[] { (float) (1.0f * Constants.sConstants
+                        .get("radial_lighting_a")) }, 0, 1);
+        mShader.setUniform1fv("radial_b",
+                new float[] { (float) (1.0f * Constants.sConstants
+                        .get("radial_lighting_b")) }, 0, 1);
+        mShader.setUniform1fv("band_width",
+                new float[] { (float) (1.0f * Constants.sConstants
+                        .get("band_width")) }, 0, 1);
+        float mv = 0.6f - (0.6f * (glowRadius));
+        if (mv < 0) mv = 0;
+        if (mv > 0.6f) mv = 0.6f;
         mShader.setUniform1fv("mute", new float[] { mv }, 0, 1);
     }
 

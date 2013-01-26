@@ -33,18 +33,19 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
-        mTicks++;
         mHeartbeatRadius = calculateHeartBeatRadius();
     }
     
     public float calculateHeartBeatRadius(){
+    	mTicks++;
     	if (HeartBeatParameters.isFastHeartbeat()){
         	elapsedFastPulses++;
-        	if(elapsedFastPulses == NUMPER_FAST_PULSES){
+        	if(elapsedFastPulses >= NUMPER_FAST_PULSES){
         		elapsedFastPulses =0;
         		HeartBeatParameters.setHeartBeatSlow();
-        	}        		
-        	return (float)Math.sin(mTicks/FAST_HEARTBEAT)+1.0f; 
+        	}        	
+            mTicks = mTicks % 100;	
+        	return 300*mTicks/100.0f; 
     	}
     	else{
     		return (float)Math.sin(mTicks/SLOW_HEARTBEAT)+1.0f;    		

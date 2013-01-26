@@ -1,4 +1,5 @@
-player_speed 3
+player_speed 1
+player_sprint_speed 4
 dead_zone_size 0.1
 heartbeat_radius 100
 heartbeat_fast_radius 40

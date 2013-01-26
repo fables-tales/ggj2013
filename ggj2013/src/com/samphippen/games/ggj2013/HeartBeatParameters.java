@@ -7,6 +7,9 @@ public class HeartBeatParameters {
     public int elapsedFastPulses = 0;
     private final double BIG_RADIUS = Constants.sConstants.get("heartbeat_radius");
     private final double SMALL_RADIUS = Constants.sConstants.get("heartbeat_fast_radius");
+    public int chaserPulseCount = 0;
+    public int treePulseCount = 0;
+    
 	private Double mHeartbeat;
     
 	public HeartBeatParameters(){

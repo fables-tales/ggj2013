@@ -17,7 +17,8 @@ public class GameHolder implements ApplicationListener {
 	private Sprite sprite;
 	
 	@Override
-	public void create() {		
+	public void create() {	
+	    Constants.setConstants();
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
@@ -33,6 +34,7 @@ public class GameHolder implements ApplicationListener {
 		sprite.setSize(0.9f, 0.9f * sprite.getHeight() / sprite.getWidth());
 		sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
 		sprite.setPosition(-sprite.getWidth()/2, -sprite.getHeight()/2);
+		
 	}
 
 	@Override

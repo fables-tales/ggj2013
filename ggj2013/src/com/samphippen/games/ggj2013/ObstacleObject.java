@@ -15,7 +15,8 @@ public class ObstacleObject implements GameObject {
     @Override
     public void update() {
         Vector2 playerPosition = PlayerObject.getInstance().getPosition();
-        if (playerPosition.dst(mSprite.getX()+mSprite.getWidth()/2-16f, mSprite.getY()+mSprite.getHeight()*0.2f) < Constants
+        if (playerPosition.dst(mSprite.getX() + mSprite.getWidth() / 2 - 16f,
+                mSprite.getY() + mSprite.getHeight() * 0.2f) < Constants
                 .getDouble("obstacle_width")) {
             PlayerObject.getInstance().rejectMovement();
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
@@ -25,7 +26,8 @@ public class ObstacleObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite), (int) mSprite.getY());
+        renderQueue.add(new SpriteRenderable(mSprite),
+                (int) (mSprite.getY() + mSprite.getHeight() * 0.15));
     }
 
 }

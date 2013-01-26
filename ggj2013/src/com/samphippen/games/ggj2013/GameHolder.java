@@ -48,9 +48,40 @@ public class GameHolder implements ApplicationListener {
     private float mPulseR = 1.0f;
     private float mPulseB = 1.0f;
     private float mPulseG = 1.0f;
+    private boolean mSplash = true;
+    private Sprite mSplashSprite;
+
+    private static final int NLIGHTS = 8;
+    private final LightManager mLightManager = new LightManager();
 
     public SoundManager getSoundManager() {
         return mSoundManager;
+    }
+
+    private static String createLocalLightUniformDeclaration() {
+        String eyes = "";
+        for (int i = 0; i < NLIGHTS; ++i) {
+            eyes += "uniform vec4 localLight" + i + ";\n";
+        }
+        return eyes;
+    }
+
+    private static String createLocalLightLightnessModifier() {
+        String eyes = "";
+        float lightLevel = 0.7f;
+        for (int i = 0; i < NLIGHTS; ++i) {
+            eyes += "{ float local_distance = distance(gl_FragCoord.xy, localLight"
+                    + i + ".xy);";
+            eyes += "if (local_distance < localLight" + i
+                    + ".z) { lightness += " + lightLevel + "; }";
+            eyes += "else if (local_distance < localLight" + i + ".w) {";
+            eyes += "lightness += " + lightLevel
+                    + " * (1.0 - ((local_distance - localLight" + i
+                    + ".z) / (localLight" + i + ".w - localLight" + i
+                    + ".z)));";
+            eyes += "} }";
+        }
+        return eyes;
     }
 
     @Override
@@ -96,8 +127,8 @@ public class GameHolder implements ApplicationListener {
                 + "uniform float radial_b;"
                 + "uniform float channel_r;"
                 + "uniform float channel_g;"
-                + "uniform float channel_b;"
-                + "uniform float band_width;"
+                + "uniform float channel_b;" + "uniform float band_width;"
+                + createLocalLightUniformDeclaration()
                 + "void main()\n"//
                 + "{\n" //
                 + "  float centerX = 400.0;"
@@ -130,6 +161,7 @@ public class GameHolder implements ApplicationListener {
                 + "     float per = radial_a/(abs(dx*dx)+abs(dy*dy)+radial_b);"
                 + "     lightness += per*0.1;"
                 + "  }"
+                + createLocalLightLightnessModifier()
                 // TODO change to 0.1
                 // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.1) lightness = 0.1;"
@@ -140,20 +172,21 @@ public class GameHolder implements ApplicationListener {
                 + "     gl_FragColor[0] = (intensity * mute + gl_FragColor[0] * (1.0 - mute))*channel_r;"
                 + "     gl_FragColor[1] = (intensity * mute + gl_FragColor[1] * (1.0 - mute))*channel_g;"
                 + "     gl_FragColor[2] = (intensity * mute + gl_FragColor[2] * (1.0 - mute))*channel_b;"
-                + "  }" + "  gl_FragColor[3] = tmp;"
+                + "  }"
+                + "  gl_FragColor[3] = tmp;"
                 + "const float GAMMA_ADJUST = (2.4 / "
                 + nativeGamma
                 + ");"
                 + "gl_FragColor[0] = pow(gl_FragColor[0], GAMMA_ADJUST);"
                 + "gl_FragColor[1] = pow(gl_FragColor[1], GAMMA_ADJUST);"
-                + "gl_FragColor[2] = pow(gl_FragColor[2], GAMMA_ADJUST);"
-                + "}";
+                + "gl_FragColor[2] = pow(gl_FragColor[2], GAMMA_ADJUST);" + "}";
 
         ShaderProgram.pedantic = false;
 
         Constants.setConstants();
         mWinSprite = GameServices.loadSprite("winscreen.png");
         mLoseSprite = GameServices.loadSprite("losescreen.png");
+        mSplashSprite = GameServices.loadSprite("splashscreen.png");
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
@@ -182,20 +215,23 @@ public class GameHolder implements ApplicationListener {
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
-        
+
         // Distance to winning point destination
-        double endPointMinDistance = Constants.sConstants.get("end_point_distance_min");
-        float endPointRandomisedDistance = (float) (Constants.sConstants.get("end_point_distance_max") - endPointMinDistance);
-        Vector2 destination = new Vector2(
-        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance,
-        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance);
+        double endPointMinDistance = Constants.sConstants
+                .get("end_point_distance_min");
+        float endPointRandomisedDistance = (float) (Constants.sConstants
+                .get("end_point_distance_max") - endPointMinDistance);
+        Vector2 destination = new Vector2(endPointRandomisedDistance
+                * GameServices.sRng.nextFloat() + endPointRandomisedDistance,
+                endPointRandomisedDistance * GameServices.sRng.nextFloat()
+                        + endPointRandomisedDistance);
         if (GameServices.sRng.nextBoolean()) {
             destination.x = -destination.x;
         }
         if (GameServices.sRng.nextBoolean()) {
             destination.y = -destination.y;
         }
-        
+
         List<Vector2> path = cpf.findPath(
                 GameServices.toPathFinder(mPlayer.getPosition()),
                 GameServices.toPathFinder(destination));
@@ -213,7 +249,9 @@ public class GameHolder implements ApplicationListener {
                 s.setColor(0.3f, 1, 1, 1);
                 mPathSprites.add(s);
                 prev = v;
-
+                Light campfire = mLightManager.createLight(v);
+                campfire.setInnerRadius(10.0f);
+                campfire.setOuterRadius(50.0f);
             }
         }
 
@@ -223,6 +261,11 @@ public class GameHolder implements ApplicationListener {
 
         mSoundManager = new SoundManager();
         whitePulse();
+
+        Light campfire = mLightManager.createLight(PlayerObject.getInstance()
+                .getPosition().add(0.0f, 100.0f));
+        campfire.setInnerRadius(20.0f);
+        campfire.setOuterRadius(70.0f);
     }
 
     @Override
@@ -232,15 +275,27 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin && !mDrawLose) {
+        if (!mDrawWin && !mDrawLose && !mSplash ) {
             update();
             draw();
         } else if (mDrawWin) {
             drawWin();
         } else if (mDrawLose) {
             drawLose();
+        } else if (mSplash) {
+            drawSplash();
         }
 
+    }
+
+    private void drawSplash() {
+        mSpecialBatch.begin();
+        mSplashSprite .setPosition(0, 0);
+        mSplashSprite.draw(mSpecialBatch);
+        mSpecialBatch.end();
+        if (Gdx.input.isKeyPressed(Keys.ENTER)) {
+            mSplash = false;
+        }
     }
 
     private void drawLose() {
@@ -346,6 +401,23 @@ public class GameHolder implements ApplicationListener {
             mv = 0.6f;
         }
         mShader.setUniform1fv("mute", new float[] { mv }, 0, 1);
+        int lightIndex = 0;
+        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        for (Light light : mLightManager.lightsNearest(playerPosition, NLIGHTS)) {
+            Vector2 lightPos = light.getPosition();
+            Vector2 lightPosScreenSpace = new Vector2(lightPos.x
+                    - playerPosition.x + 400, lightPos.y - playerPosition.y
+                    + 300);
+            mShader.setUniform4fv("localLight" + lightIndex,
+                    new float[] { lightPosScreenSpace.x, lightPosScreenSpace.y,
+                            light.getInnerRadius(), light.getOuterRadius() },
+                    0, 4);
+            ++lightIndex;
+        }
+        for (; lightIndex < NLIGHTS; ++lightIndex) {
+            mShader.setUniform4fv("localLight" + lightIndex, new float[] {
+                    -10.0f, -10.0f, 0.0f, 1.0f }, 0, 1);
+        }
     }
 
     private Vector2 getCameraOrigin() {
@@ -374,11 +446,15 @@ public class GameHolder implements ApplicationListener {
         mPulseR = 1f;
         if (mPulseG < 1.0) {
             System.out.println(mPulseG);
-            mPulseG += 0.05f;
+            mPulseG += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseG = 1.0f;
         }
+        
         if (mPulseB < 1.0) {
-            mPulseB += 0.05f;
-            System.out.println(mPulseB);
+            mPulseB += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseB = 1.0f;
         }
     }
 }

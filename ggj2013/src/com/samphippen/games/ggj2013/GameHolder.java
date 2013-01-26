@@ -56,6 +56,7 @@ public class GameHolder implements ApplicationListener {
     private int mGuardFrames;
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
+    private SmokeObject mFog;
 
     public SoundManager getSoundManager() {
         return mSoundManager;
@@ -219,6 +220,7 @@ public class GameHolder implements ApplicationListener {
                 cpf);
         obstaclesFactory.makeObstacles();
 
+        mFog = new SmokeObject();
         // Distance to winning point destination
         double endPointMinDistance = Constants.sConstants
                 .get("end_point_distance_min");
@@ -329,6 +331,8 @@ public class GameHolder implements ApplicationListener {
         mMouse.update();
 
         GameServices.advanceTicks();
+        mFog.update();
+        mFog.setPosition(getCameraOrigin().x, getCameraOrigin().y);
 
         Sprite endSprite = mPathSprites.get(mPathSprites.size() - 1);
         if (new Vector2(mPlayer.getPosition()).sub(endSprite.getX(),
@@ -364,9 +368,12 @@ public class GameHolder implements ApplicationListener {
         for (GameObject object : mWorldObjects) {
             object.emitRenderables(mQueueProxy);
         }
+        mFog.emitRenderables(mQueueProxy);
         mQueueProxy.commit();
+        
 
         mBatch.begin();
+        
 
         setShaderValues();
         for (Renderable renderable : mToRender) {

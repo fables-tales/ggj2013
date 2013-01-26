@@ -20,7 +20,7 @@ public class BackgroundObject implements GameObject {
 	}
 	
 	@Override
-	public void emitRenderables(List<Renderable> renderables) {
+	public void emitRenderables(RenderQueueProxy renderables) {
 		renderables.add(mSpriteRenderable);
 	}
 

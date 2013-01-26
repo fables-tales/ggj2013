@@ -1,5 +1,8 @@
 package com.samphippen.games.ggj2013;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -9,52 +12,75 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 
 public class GameHolder implements ApplicationListener {
-	private OrthographicCamera camera;
-	private SpriteBatch batch;
-	private Texture texture;
-	private Sprite sprite;
+	private OrthographicCamera mCamera;
+	private SpriteBatch mBatch;
+	private List<GameObject> mWorldObjects = new ArrayList<GameObject>();
+	private List<Renderable> mToRender = new ArrayList<Renderable>();
+	private Sprite mSprite;
+    private Vector2 mCameraOrigin;
+    private PlayerObject mPlayer;
 	
 	@Override
 	public void create() {	
 	    Constants.setConstants();
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-		
-		camera = new OrthographicCamera(1, h/w);
-		batch = new SpriteBatch();
-		System.out.println(Gdx.files.internal("data/libgdx.png").file().getAbsolutePath());
-		texture = new Texture(Gdx.files.internal("data/libgdx.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
-		TextureRegion region = new TextureRegion(texture, 0, 0, 512, 275);
-		
-		sprite = new Sprite(region);
-		sprite.setSize(0.9f, 0.9f * sprite.getHeight() / sprite.getWidth());
-		sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-		sprite.setPosition(-sprite.getWidth()/2, -sprite.getHeight()/2);
-		
+		setCameraOrigin(new Vector2(0, 0));
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        mCamera = new OrthographicCamera(w, h);
+        mBatch = new SpriteBatch();
+        mPlayer = PlayerObject.getInstance();
+        mWorldObjects.add(mPlayer);
 	}
 
-	@Override
+	private void setCameraOrigin(Vector2 vector2) {
+	    mCameraOrigin = vector2;
+    }
+
+    @Override
 	public void dispose() {
-		batch.dispose();
-		texture.dispose();
+		mBatch.dispose();
 	}
 
 	@Override
 	public void render() {		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+	    update();
+	    draw();
 		
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		sprite.draw(batch);
-		batch.end();
 	}
 
-	@Override
+	private void update() {
+        mPlayer.update();
+    }
+
+    private void draw() {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        
+        mBatch.setProjectionMatrix(mCamera.combined);
+        mBatch.setTransformMatrix(new Matrix4().translate(-getCameraOrigin().x,
+                -getCameraOrigin().y, 0));
+        
+        mToRender.clear();
+        for (GameObject o : mWorldObjects) {
+            o.emitRenderables(mToRender);
+        }
+        
+        mBatch.begin();
+        for (Renderable r : mToRender) {
+            r.draw(mBatch);
+        }
+        mBatch.end();   
+    }
+
+    private Vector2 getCameraOrigin() {
+	    return mCameraOrigin;
+    }
+
+    @Override
 	public void resize(int width, int height) {
 	}
 

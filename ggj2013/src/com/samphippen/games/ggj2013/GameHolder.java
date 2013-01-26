@@ -161,23 +161,26 @@ public class GameHolder implements ApplicationListener {
         mWorldObjects.add(mPlayer);
         mWorldObjects.add(mChaser);
         // Add obstacles to the world
-        // TODO currently makes one
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
                 GameServices.PATH_FINDER_HEIGHT);
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
+        
+        // Distance to winning point destination
+        double endPointMinDistance = Constants.sConstants.get("end_point_distance_min");
+        float endPointRandomisedDistance = (float) (Constants.sConstants.get("end_point_distance_max") - endPointMinDistance);
         Vector2 destination = new Vector2(
-                500 * GameServices.sRng.nextFloat() + 1000,
-                500 * GameServices.sRng.nextFloat() + 1000);
+        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance,
+        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance);
         if (GameServices.sRng.nextBoolean()) {
             destination.x = -destination.x;
         }
         if (GameServices.sRng.nextBoolean()) {
             destination.y = -destination.y;
         }
-        // destination = new Vector2(1000, 1000);
+        
         List<Vector2> path = cpf.findPath(
                 GameServices.toPathFinder(mPlayer.getPosition()),
                 GameServices.toPathFinder(destination));

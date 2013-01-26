@@ -8,7 +8,7 @@ public class SpriteRenderable implements Renderable {
     private Sprite mSprite;
     
     public SpriteRenderable(String fileName) {
-        mSprite = GameServices.loadSprite("color.png");
+        mSprite = GameServices.loadSprite(filename);
     }
 
     @Override

@@ -13,6 +13,8 @@ chaser_speed 0.01
 chaser_reappear_delay 2
 chaser_reappear_extra_random_delay 4
 waypoint_spacing 200
+obstacle_width 20
+obstacle_density 0.000025
 chaser_spawn_random_radius 200
 chaser_spawn_constant_spawn_radius 20
 end_point_distance_min 1000

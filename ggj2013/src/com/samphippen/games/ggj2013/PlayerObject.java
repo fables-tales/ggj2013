@@ -32,7 +32,7 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
-        mSprite.setPosition(mPosition.x, mPosition.y);
+        mSprite.setPosition(mPosition.x-10, mPosition.y-30);
         mHeartbeatRadius = calculateHeartBeatRadius();
     }
 

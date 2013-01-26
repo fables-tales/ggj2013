@@ -1,3 +1,2 @@
-SIZE 80
 player_speed 3
 dead_zone_size 0.1

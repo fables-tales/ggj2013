@@ -18,7 +18,8 @@ public class ChaserObject implements GameObject {
 
     @Override
     public void update() {
-        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        PlayerObject player = PlayerObject.getInstance();
+		Vector2 playerPosition = player.getPosition();
 
         Vector2 delta = new Vector2(playerPosition).sub(mPosition);
         if (delta.len() > 400) {
@@ -34,6 +35,10 @@ public class ChaserObject implements GameObject {
             float y = (float) ((float) radius * Math.sin(theta));
             Vector2 position = new Vector2(playerPosition).add(x, y);
             mPosition = position;
+        }
+        // Make heartbeat fast if near
+        if(mPosition.dst(playerPosition) < Constants.sConstants.get("chaser_heart_attack_distance_trigger") ){
+        	player.HeartBeatParameters.setHeartBeatFast();
         }
 
         mSprite.setPosition(mPosition.x, mPosition.y);

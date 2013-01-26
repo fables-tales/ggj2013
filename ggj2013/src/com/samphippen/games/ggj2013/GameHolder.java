@@ -36,7 +36,7 @@ public class GameHolder implements ApplicationListener {
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
-    private List<Sprite> mPathSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mPathSprites = new ArrayList<Sprite>();
 
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;
@@ -168,9 +168,21 @@ public class GameHolder implements ApplicationListener {
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
+        Vector2 destination = new Vector2(
+                500 * GameServices.sRng.nextFloat() + 1000,
+                500 * GameServices.sRng.nextFloat() + 1000);
+        if (GameServices.sRng.nextBoolean()) {
+            destination.x = -destination.x;
+        }
+        if (GameServices.sRng.nextBoolean()) {
+            destination.y = -destination.y;
+        }
+        // destination = new Vector2(1000, 1000);
         List<Vector2> path = cpf.findPath(
                 GameServices.toPathFinder(mPlayer.getPosition()),
-                GameServices.toPathFinder(new Vector2(1000, 1000)));
+                GameServices.toPathFinder(destination));
+
+        assert path != null : "no path to destination";
 
         Vector2 prev = mPlayer.getPosition();
 
@@ -214,7 +226,7 @@ public class GameHolder implements ApplicationListener {
     private void drawLose() {
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        mLoseSprite.setPosition(-400,-300);
+        mLoseSprite.setPosition(-400, -300);
         mLoseSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
     }
@@ -222,7 +234,7 @@ public class GameHolder implements ApplicationListener {
     private void drawWin() {
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        mWinSprite.setPosition(-400,-300);
+        mWinSprite.setPosition(-400, -300);
         mWinSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
     }
@@ -244,9 +256,9 @@ public class GameHolder implements ApplicationListener {
                 endSprite.getY()).len() < 40) {
             mDrawWin = true;
         }
-        
+
         if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < 40) {
-            mDrawLose  = true;
+            mDrawLose = true;
         }
     }
 

@@ -190,7 +190,8 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void setShaderValues() {
-        float glowRadius = 150*mPlayer.mHeartbeatRadius+10;
+        float glowRadius = (float) (Constants.sConstants.get("heartbeat_size")
+                * mPlayer.mHeartbeatRadius + Constants.sConstants.get("heartbeat_min_size"));
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius }, 0, 1);
         float mv = 0.6f - (0.6f * (glowRadius));
         if (mv < 0) mv = 0;
@@ -199,7 +200,7 @@ public class GameHolder implements ApplicationListener {
     }
 
     private Vector2 getCameraOrigin() {
-        return new Vector2(mPlayer.getPosition()).add(8,8);
+        return new Vector2(mPlayer.getPosition()).add(8, 8);
     }
 
     @Override

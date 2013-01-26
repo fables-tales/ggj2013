@@ -2,12 +2,16 @@ package com.samphippen.games.ggj2013;
 
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
 public class BackgroundObject implements GameObject {
 
 	private SpriteRenderable mSpriteRenderable;
 	
-	public BackgroundObject(SpriteRenderable spriteRenderable){
-		mSpriteRenderable = new SpriteRenderable("newBackground.png");
+	public BackgroundObject(){		
+		Sprite sprite = GameServices.loadSprite("newBackground.png");
+		sprite.setPosition(-400, -300);
+		mSpriteRenderable = new SpriteRenderable(sprite);
 	}
 	
 	@Override

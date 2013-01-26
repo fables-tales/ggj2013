@@ -18,7 +18,7 @@ public class PlayerObject implements GameObject {
             .get("number_fast_pulses");
 
     private PlayerObject() {
-        mSprite = GameServices.loadSprite("color.png");
+        mSprite = GameServices.loadSprite("player.png");
     }
 
     public static PlayerObject getInstance() {
@@ -33,7 +33,7 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
-        mSprite.setPosition(mPosition.x, mPosition.y);
+        mSprite.setPosition(mPosition.x-10, mPosition.y-30);
         mHeartbeatRadius = calculateHeartBeatRadius();
     }
 
@@ -50,6 +50,18 @@ public class PlayerObject implements GameObject {
         if (mTicks == 0) {
             GameHolder.getInstance().getSoundManager().beatHeart();
         }
+        
+    	if (HeartBeatParameters.isFastHeartbeat()){
+    		if(mTicks == 0){
+        		HeartBeatParameters.elapsedFastPulses++;    			
+    		}
+        	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
+        		HeartBeatParameters.setHeartBeatSlow();
+        		GameHolder.getInstance().whitePulse();
+        	}        	
+    	} else {
+    	    GameHolder.getInstance().whitePulse();
+    	}
 
         if (HeartBeatParameters.isFastHeartbeat()) {
             if (mTicks == 0) {

@@ -8,15 +8,14 @@ public class ObstacleObject implements GameObject {
     private final Sprite mSprite;
 
     public ObstacleObject(Vector2 position) {
-        mSprite = GameServices.loadSprite("color.png");
-        mSprite.setColor(1.0f, 0.0f, 0.3f, 1.0f);
+        mSprite = GameServices.loadSprite("tree.png");
         mSprite.setPosition(position.x, position.y);
     }
 
     @Override
     public void update() {
         Vector2 playerPosition = PlayerObject.getInstance().getPosition();
-        if (playerPosition.dst(mSprite.getX(), mSprite.getY()) < Constants
+        if (playerPosition.dst(mSprite.getX()+mSprite.getWidth()/2-16f, mSprite.getY()+mSprite.getHeight()*0.2f) < Constants
                 .getDouble("obstacle_width")) {
             mSprite.setColor(0.1f, 1, 0.1f, 1);
             PlayerObject.getInstance().rejectMovement();

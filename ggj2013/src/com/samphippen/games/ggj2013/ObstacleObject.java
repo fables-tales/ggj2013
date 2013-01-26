@@ -8,8 +8,8 @@ public class ObstacleObject implements GameObject {
     private final Sprite mSprite;
 
     public ObstacleObject(Vector2 position) {
-        mSprite = GameServices.loadSprite("color.png");
-        mSprite.setColor(1.0f, 0.0f, 0.3f, 1.0f);
+        mSprite = GameServices.loadSprite("tree.png");
+        
         mSprite.setPosition(position.x, position.y);
     }
 

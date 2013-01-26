@@ -120,7 +120,8 @@ public class GameHolder implements ApplicationListener {
                 + "     float per = radial_a/(abs(dx*dx)+abs(dy*dy)+radial_b);"
                 + "     lightness += per*0.1;"
                 + "  }"
-                // change to 0.1
+                // TODO change to 0.1
+                //+ " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.1) lightness = 0.1;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"

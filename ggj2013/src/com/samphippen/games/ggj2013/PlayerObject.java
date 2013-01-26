@@ -6,13 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 public class PlayerObject implements GameObject {
 
     private static PlayerObject sInstance = null;
-
     private Sprite mSprite = null;
-
     public float mHeartbeatRadius = (float) 1.0;
-
-    private final Vector2 mPosition = new Vector2(0, 0);
+    private Vector2 mPosition = new Vector2(0, 0);
     private int mTicks = 0;
+    public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
+
+    private final Double NUMPER_FAST_PULSES = Constants.sConstants.get("number_fast_pulses");
 
     private PlayerObject() {
         mSprite = GameServices.loadSprite("color.png");
@@ -30,12 +30,26 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
-        mTicks++;
-        mHeartbeatRadius = 300 * mTicks / 100.0f;
-        mTicks = mTicks % 100;
+        mHeartbeatRadius = calculateHeartBeatRadius();
+    }
+    
+    public float calculateHeartBeatRadius(){
+    	mTicks++;
+        mTicks = mTicks % HeartBeatParameters.getMaxRadius();
+
         if (mTicks == 0) {
             GameHolder.getInstance().getSoundManager().beatHeart();
         }
+        
+    	if (HeartBeatParameters.isFastHeartbeat()){
+    		if(mTicks == 0){
+        		HeartBeatParameters.elapsedFastPulses++;    			
+    		}
+        	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
+        		HeartBeatParameters.setHeartBeatSlow();
+        	}        	
+    	}
+    	return 3 * mTicks; 
     }
 
     public Vector2 getPosition() {

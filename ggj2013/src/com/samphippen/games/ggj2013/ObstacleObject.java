@@ -21,6 +21,7 @@ public class ObstacleObject implements GameObject {
             mSprite.setColor(0.1f, 1, 0.1f, 1);
             PlayerObject.getInstance().rejectMovement();
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
+            GameHolder.getInstance().getSoundManager().thunk();
         }
     }
 

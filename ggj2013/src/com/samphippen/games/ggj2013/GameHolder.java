@@ -275,7 +275,7 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin && !mDrawLose && !mSplash ) {
+        if (!mDrawWin && !mDrawLose && !mSplash) {
             update();
             draw();
         } else if (mDrawWin) {
@@ -290,11 +290,12 @@ public class GameHolder implements ApplicationListener {
 
     private void drawSplash() {
         mSpecialBatch.begin();
-        mSplashSprite .setPosition(0, 0);
+        mSplashSprite.setPosition(0, 0);
         mSplashSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ENTER)) {
             mSplash = false;
+            mSoundManager.beatHeart();
         }
     }
 
@@ -334,6 +335,16 @@ public class GameHolder implements ApplicationListener {
 
         if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < 40) {
             mDrawLose = true;
+        }
+
+        Vector2 mouseSpeed = InputSystem.mouseSpeedVector();
+        float totalSpeed = mouseSpeed.len();
+        int stepTime = 1; // prevents usage
+        if (totalSpeed > 0.4) {
+            stepTime = (int) (30 / Math.pow(totalSpeed, 0.27));
+        }
+        if (GameServices.getTicks() % stepTime == 2) {
+            mSoundManager.step();
         }
     }
 
@@ -450,7 +461,7 @@ public class GameHolder implements ApplicationListener {
         } else {
             mPulseG = 1.0f;
         }
-        
+
         if (mPulseB < 1.0) {
             mPulseB += Constants.getFloat("red_decay_rate");
         } else {

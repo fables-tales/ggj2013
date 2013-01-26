@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.samphippen.games.ggj2013.maze.Graph;
 
 public class GameHolder implements ApplicationListener {
 	private OrthographicCamera mCamera;
@@ -27,6 +28,7 @@ public class GameHolder implements ApplicationListener {
 	@Override
 	public void create() {	
 	    Constants.setConstants();
+	    new Graph(30, 30);
 		setCameraOrigin(new Vector2(0, 0));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();

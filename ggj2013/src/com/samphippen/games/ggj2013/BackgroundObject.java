@@ -29,7 +29,7 @@ public class BackgroundObject implements GameObject {
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
         for (SpriteRenderable sr : mSpriteRenderables) {
-            renderables.add(sr, -Constants.QUITE_A_LOT);
+            renderables.add(sr, Constants.QUITE_A_LOT);
         }
 
     }

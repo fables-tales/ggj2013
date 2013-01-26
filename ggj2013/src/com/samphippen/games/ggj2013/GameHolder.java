@@ -15,6 +15,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
+    private static GameHolder sSharedInstance = null;
+
+    public static GameHolder getInstance() {
+        return sSharedInstance;
+    }
+
     private OrthographicCamera mCamera;
     private SpriteBatch mBatch;
     private SpriteBatch mSpecialBatch;
@@ -32,6 +38,8 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void create() {
+        assert sSharedInstance == null : "duplicate GameHolder";
+        sSharedInstance = this;
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //

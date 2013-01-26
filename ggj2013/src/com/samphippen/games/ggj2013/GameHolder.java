@@ -54,6 +54,10 @@ public class GameHolder implements ApplicationListener {
     public void create() {
         assert sSharedInstance == null : "duplicate GameHolder";
         sSharedInstance = this;
+        float nativeGamma = 2.4f;
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            nativeGamma = 1.8f;
+        }
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //
@@ -121,7 +125,7 @@ public class GameHolder implements ApplicationListener {
                 + "     lightness += per*0.1;"
                 + "  }"
                 // TODO change to 0.1
-                //+ " if (lightness < 1.0) lightness = 1.0;"
+                // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.1) lightness = 0.1;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
@@ -130,7 +134,14 @@ public class GameHolder implements ApplicationListener {
                 + "     gl_FragColor[0] = intensity * mute + gl_FragColor[0] * (1.0 - mute);"
                 + "     gl_FragColor[1] = intensity * mute + gl_FragColor[1] * (1.0 - mute);"
                 + "     gl_FragColor[2] = intensity * mute + gl_FragColor[2] * (1.0 - mute);"
-                + "  }" + "  gl_FragColor[3] = tmp;"
+                + "  }"
+                + "  gl_FragColor[3] = tmp;"
+                + "const float GAMMA_ADJUST = (2.4 / "
+                + nativeGamma
+                + ");"
+                + "gl_FragColor[0] = pow(gl_FragColor[0], GAMMA_ADJUST);"
+                + "gl_FragColor[1] = pow(gl_FragColor[1], GAMMA_ADJUST);"
+                + "gl_FragColor[2] = pow(gl_FragColor[2], GAMMA_ADJUST);"
 
                 + "}";
 
@@ -189,7 +200,8 @@ public class GameHolder implements ApplicationListener {
         for (Vector2 v : path) {
             Sprite s = GameServices.loadSprite("mouse.png");
             v = GameServices.fromPathFinder(v);
-            if (new Vector2(prev).sub(v).len() > Constants.sConstants.get("waypoint_spacing")) {
+            if (new Vector2(prev).sub(v).len() > Constants.sConstants
+                    .get("waypoint_spacing")) {
                 s.setPosition(v.x, v.y);
                 s.setColor(0.3f, 1, 1, 1);
                 mPathSprites.add(s);

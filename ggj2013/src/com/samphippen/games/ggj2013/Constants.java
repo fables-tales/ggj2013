@@ -1,7 +1,9 @@
 package com.samphippen.games.ggj2013;
 
+import java.util.HashMap;
+
 public class Constants {
-	static double SIZE = 0;
-	static double SPEED = 0;
+    
+    public static HashMap<String, Double> sConstants = new HashMap<String, Double>(); 
 
 }

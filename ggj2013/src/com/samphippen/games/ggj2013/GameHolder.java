@@ -23,7 +23,7 @@ public class GameHolder implements ApplicationListener {
 		
 		camera = new OrthographicCamera(1, h/w);
 		batch = new SpriteBatch();
-		
+		System.out.println(Gdx.files.internal("data/libgdx.png").file().getAbsolutePath());
 		texture = new Texture(Gdx.files.internal("data/libgdx.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		

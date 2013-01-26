@@ -7,9 +7,10 @@ public class ConstantsReader {
 
 	public void readConstants(FileInputStream fileStream){
 		Scanner scanner = new Scanner(fileStream);
-		scanner.next();
-		Constants.SIZE = Double.parseDouble(scanner.next()); 
-		scanner.next();
-		Constants.SPEED = Double.parseDouble(scanner.next());
+		while (scanner.hasNext()) {
+    		String key = scanner.next();
+    		double value = Double.parseDouble(scanner.next());
+    		Constants.sConstants.put(key, value);
+		}
 	}
 }

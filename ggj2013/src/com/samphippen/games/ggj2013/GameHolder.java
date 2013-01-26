@@ -186,6 +186,7 @@ public class GameHolder implements ApplicationListener {
         for (GameObject object : mWorldObjects) {
             object.emitRenderables(mQueueProxy);
         }
+        mQueueProxy.commit();
 
         mBatch.begin();
 

@@ -19,7 +19,7 @@ public class MouseObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite));
+        renderQueue.add(new SpriteRenderable(mSprite), 0);
     }
 
     

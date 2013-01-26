@@ -43,7 +43,7 @@ public class PlayerObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
-        renderables.add(new SpriteRenderable(mSprite));
+        renderables.add(new SpriteRenderable(mSprite), 0);
     }
 
 }

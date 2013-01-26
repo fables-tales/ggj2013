@@ -17,7 +17,7 @@ public class PlayerObject implements GameObject {
             .get("number_fast_pulses");
 
     private PlayerObject() {
-        mSprite = GameServices.loadSprite("color.png");
+        mSprite = GameServices.loadSprite("player.png");
     }
 
     public static PlayerObject getInstance() {

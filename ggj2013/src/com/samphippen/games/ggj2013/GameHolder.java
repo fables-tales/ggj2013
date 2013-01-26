@@ -137,25 +137,16 @@ public class GameHolder implements ApplicationListener {
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
                 + "     float intensity = 0.3 * gl_FragColor[0] + 0.59 * gl_FragColor[1] + 0.11 * gl_FragColor[2];"
-<<<<<<< HEAD
                 + "     gl_FragColor[0] = (intensity * mute + gl_FragColor[0] * (1.0 - mute))*channel_r;"
                 + "     gl_FragColor[1] = (intensity * mute + gl_FragColor[1] * (1.0 - mute))*channel_g;"
                 + "     gl_FragColor[2] = (intensity * mute + gl_FragColor[2] * (1.0 - mute))*channel_b;"
                 + "  }" + "  gl_FragColor[3] = tmp;"
-=======
-                + "     gl_FragColor[0] = intensity * mute + gl_FragColor[0] * (1.0 - mute);"
-                + "     gl_FragColor[1] = intensity * mute + gl_FragColor[1] * (1.0 - mute);"
-                + "     gl_FragColor[2] = intensity * mute + gl_FragColor[2] * (1.0 - mute);"
-                + "  }"
-                + "  gl_FragColor[3] = tmp;"
                 + "const float GAMMA_ADJUST = (2.4 / "
                 + nativeGamma
                 + ");"
                 + "gl_FragColor[0] = pow(gl_FragColor[0], GAMMA_ADJUST);"
                 + "gl_FragColor[1] = pow(gl_FragColor[1], GAMMA_ADJUST);"
                 + "gl_FragColor[2] = pow(gl_FragColor[2], GAMMA_ADJUST);"
->>>>>>> 1c222cadc0a7e801cb25d3ebb4d70b35baec0ced
-
                 + "}";
 
         ShaderProgram.pedantic = false;

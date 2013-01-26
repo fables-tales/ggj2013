@@ -40,9 +40,9 @@ public class InputSystem {
         if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)
                 || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT)) {
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
-            return result.nor().mul(4);
+            return result.nor().mul(Constants.getFloat("player_sprint_speed"));
         } else {
-            return result.nor().mul(2);
+            return result.nor().mul(Constants.getFloat("player_speed"));
         }
 
     }

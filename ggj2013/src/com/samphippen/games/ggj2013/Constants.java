@@ -27,4 +27,8 @@ public class Constants {
     public static double getDouble(String key) {
         return sConstants.get(key);
     }
+
+    public static float getFloat(String key) {
+        return (float) getDouble(key);
+    }
 }

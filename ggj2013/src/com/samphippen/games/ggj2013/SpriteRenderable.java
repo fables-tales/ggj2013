@@ -16,8 +16,8 @@ public class SpriteRenderable implements Renderable {
     }
 
     @Override
-    public void draw(SpriteBatch sb) {
-        mSprite.draw(sb);
+    public void draw(SpriteBatch batch) {
+        mSprite.draw(batch);
     }
     
     

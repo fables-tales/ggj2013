@@ -1,6 +1,7 @@
 package com.samphippen.games.ggj2013;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 
 public class InputSystem {
@@ -36,7 +37,13 @@ public class InputSystem {
             double desiredSize = Constants.sConstants.get("player_speed");
             result.mul((float) (desiredSize / result.len()));
         }
-        return result;
+        if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)
+                || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT)) {
+            PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
+            return result.nor().mul(4);
+        } else {
+            return result.nor().mul(2);
+        }
 
     }
 }

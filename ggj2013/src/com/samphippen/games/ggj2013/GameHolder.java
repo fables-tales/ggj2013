@@ -260,7 +260,7 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void update() {
-        if (Gdx.input.isKeyPressed(Keys.ANY_KEY)) {
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             System.exit(1);
         }
         for (GameObject o : mWorldObjects) {

@@ -13,6 +13,7 @@ public class ChaserObject implements GameObject {
 
     public ChaserObject() {
         mSprite = GameServices.loadSprite("chaser.png");
+        mSprite.setColor(3.0f, 0.1f, 0.1f, 1.0f);
         mPosition = new Vector2(80, 80);
     }
 

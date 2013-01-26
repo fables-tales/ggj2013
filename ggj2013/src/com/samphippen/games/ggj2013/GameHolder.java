@@ -177,7 +177,7 @@ public class GameHolder implements ApplicationListener {
         for (Vector2 v : path) {
             Sprite s = GameServices.loadSprite("mouse.png");
             v = GameServices.fromPathFinder(v);
-            if (new Vector2(prev).sub(v).len() > 200) {
+            if (new Vector2(prev).sub(v).len() > Constants.sConstants.get("waypoint_spacing")) {
                 s.setPosition(v.x, v.y);
                 s.setColor(0.3f, 1, 1, 1);
                 mPathSprites.add(s);

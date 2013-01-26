@@ -23,4 +23,8 @@ public class Constants {
             missingFileException.printStackTrace();
         }
     }
+
+    public static double getDouble(String key) {
+        return sConstants.get(key);
+    }
 }

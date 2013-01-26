@@ -1,4 +1,5 @@
 #!/bin/bash
+rm ggj2013.zip
 dir=`mktemp -d lolwatXXXXXX`
 curdir=`pwd`
 echo $dir

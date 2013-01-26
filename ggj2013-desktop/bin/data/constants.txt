@@ -25,3 +25,4 @@ safe_zone_size 400
 red_decay_rate 0.01
 tree_slow_speed 0.5
 big_pulse_amp 3
+die_radius 40

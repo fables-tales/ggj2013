@@ -345,7 +345,7 @@ public class GameHolder implements ApplicationListener {
             mDrawWin = true;
         }
 
-        if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < 40) {
+        if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < Constants.getFloat("die_radius")) {
             mDrawLose = true;
         }
 

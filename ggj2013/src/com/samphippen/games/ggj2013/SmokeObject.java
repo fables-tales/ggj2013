@@ -14,7 +14,7 @@ public class SmokeObject implements GameObject {
     private int mCurrentSprite = 0;
 
     public SmokeObject() {
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 60; i++) {
             String filename = "" + i;
             while (filename.length() < 3) {
                 filename = "0" + filename;
@@ -30,10 +30,13 @@ public class SmokeObject implements GameObject {
     public void setPosition(float x, float y) {
         mTransform.set(x, y);
     }
+    
+    int k = 0;
 
     @Override
     public void update() {
-        if (GameServices.sRng.nextBoolean()) {
+        k += 1;
+        if (k % 3 == 0) {
             mCurrentSprite += 1;
         }
         mCurrentSprite = mCurrentSprite % mSprites.size();
@@ -43,6 +46,7 @@ public class SmokeObject implements GameObject {
     public void emitRenderables(RenderQueueProxy renderQueue) {
         Sprite s = mSprites.get(mCurrentSprite);
         s.setPosition(mTransform.x, mTransform.y);
+        s.setColor(1,1,1,0.7f);
         renderQueue.add(new SpriteRenderable(s), Constants.QUITE_A_LOT);
     }
 

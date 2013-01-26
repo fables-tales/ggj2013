@@ -244,12 +244,11 @@ public class GameHolder implements ApplicationListener {
         Vector2 prev = mPlayer.getPosition();
 
         for (Vector2 v : path) {
-            Sprite s = GameServices.loadSprite("mouse.png");
+            Sprite s = GameServices.loadSprite("campfire.png");
             v = GameServices.fromPathFinder(v);
             if (new Vector2(prev).sub(v).len() > Constants.sConstants
                     .get("waypoint_spacing")) {
-                s.setPosition(v.x, v.y);
-                s.setColor(0.3f, 1, 1, 1);
+                s.setPosition(v.x-s.getWidth()/2, v.y-s.getHeight()/2);
                 mPathSprites.add(s);
                 prev = v;
                 Light campfire = mLightManager.createLight(v);
@@ -386,8 +385,8 @@ public class GameHolder implements ApplicationListener {
                 && mPlayer.HeartBeatParameters.isFastHeartbeat()
                 && mWhitePulseCalled) {
             System.out.println("sup");
-            glowRadius *= 3;
-            maxGlowRadius *= 3;
+            glowRadius *= Constants.getFloat("big_pulse_amp");
+            maxGlowRadius *= Constants.getFloat("big_pulse_amp");
         }
         mShader.setUniform1fv("glow_radius", new float[] { glowRadius * (1) },
                 0, 1);

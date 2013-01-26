@@ -55,6 +55,7 @@ public class GameHolder implements ApplicationListener {
     private final LightManager mLightManager = new LightManager();
     private int mGuardFrames;
     private int mFirstPulseCounter;
+    private boolean mWhitePulseCalled = true;
 
     public SoundManager getSoundManager() {
         return mSoundManager;
@@ -381,20 +382,22 @@ public class GameHolder implements ApplicationListener {
     private void setShaderValues() {
         float glowRadius = mPlayer.mHeartbeatRadius;
         float maxGlowRadius = 300;
-        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0 && mPlayer.HeartBeatParameters.isFastHeartbeat()) {
+        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0
+                && mPlayer.HeartBeatParameters.isFastHeartbeat()
+                && mWhitePulseCalled) {
             System.out.println("sup");
             glowRadius *= 3;
             maxGlowRadius *= 3;
         }
-        mShader.setUniform1fv("glow_radius", new float[] { glowRadius
-                * (1) }, 0, 1);
+        mShader.setUniform1fv("glow_radius", new float[] { glowRadius * (1) },
+                0, 1);
 
         mShader.setUniform1fv("channel_r", new float[] { mPulseR }, 0, 1);
         mShader.setUniform1fv("channel_g", new float[] { mPulseG }, 0, 1);
         mShader.setUniform1fv("channel_b", new float[] { mPulseB }, 0, 1);
-        mShader.setUniform1fv("max_glow_radius", new float[] { maxGlowRadius
-                * ( 1) }, 0, 1);
-        
+        mShader.setUniform1fv("max_glow_radius",
+                new float[] { maxGlowRadius * (1) }, 0, 1);
+
         mShader.setUniform1fv("radial_a",
                 new float[] { (float) ((1) * Constants.sConstants
                         .get("radial_lighting_a")) }, 0, 1);
@@ -448,6 +451,9 @@ public class GameHolder implements ApplicationListener {
     }
 
     public void redPulse() {
+        if (mPlayer.HeartBeatParameters.chaserPulseCount == 1) {
+            mWhitePulseCalled = false;
+        }
         mPulseR = 1.0f;
         mPulseG = 0.3f;
         mPulseB = 0.3f;
@@ -455,6 +461,7 @@ public class GameHolder implements ApplicationListener {
 
     public void whitePulse() {
         mPulseR = 1f;
+        mWhitePulseCalled = true;
         if (mPulseG < 1.0) {
             System.out.println(mPulseG);
             mPulseG += Constants.getFloat("red_decay_rate");

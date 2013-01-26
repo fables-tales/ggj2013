@@ -22,3 +22,4 @@ end_point_distance_min 1000
 end_point_distance_max 1500
 heartbeat_speed_multiplier 2
 safe_zone_size 400
+red_decay_rate 0.01

@@ -389,11 +389,15 @@ public class GameHolder implements ApplicationListener {
         mPulseR = 1f;
         if (mPulseG < 1.0) {
             System.out.println(mPulseG);
-            mPulseG += 0.05f;
+            mPulseG += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseG = 1.0f;
         }
+        
         if (mPulseB < 1.0) {
-            mPulseB += 0.05f;
-            System.out.println(mPulseB);
+            mPulseB += Constants.getFloat("red_decay_rate");
+        } else {
+            mPulseB = 1.0f;
         }
     }
 }

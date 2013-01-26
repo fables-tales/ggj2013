@@ -5,8 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 
 public class InputSystem {
     private static InputSystem sInstance = null;
-    
-    private static final float DEAD_ZONE_SIZE = (float)(1.0f*Constants.sConstants.get("dead_zone_size"));
+
+    private static final float DEAD_ZONE_SIZE = (float) (1.0f * Constants.sConstants
+            .get("dead_zone_size"));
 
     public InputSystem getInstance() {
         if (sInstance == null) {
@@ -18,16 +19,13 @@ public class InputSystem {
 
     public static Vector2 mouseSpeedVector() {
         float x = Gdx.input.getX() * 1.0f / (GameServices.WIDTH / 2) - 1;
-        float y = 1.0f - (Gdx.input.getY() * 1.0f / (GameServices.HEIGHT / 2));
+        float y = 1.0f - Gdx.input.getY() * 1.0f / (GameServices.HEIGHT / 2);
 
-        if (Math.abs(x) < DEAD_ZONE_SIZE) {
+        if (Math.hypot(x, y) < DEAD_ZONE_SIZE) {
             x = 0;
-        }
-
-        if (Math.abs(y) < DEAD_ZONE_SIZE) {
             y = 0;
         }
-        
+
         if (!Gdx.input.isTouched()) {
             x = 0;
             y = 0;

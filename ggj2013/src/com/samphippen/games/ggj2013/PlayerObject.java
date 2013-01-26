@@ -8,7 +8,7 @@ public class PlayerObject implements GameObject {
     private static PlayerObject sInstance = null;
     private Sprite mSprite = null;
     public float mHeartbeatRadius = (float) 1.0;
-    private Vector2 mPosition = new Vector2(0,0);
+    private Vector2 mPosition = new Vector2(0, 0);
     private int mTicks = 0;
     public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
 
@@ -36,6 +36,10 @@ public class PlayerObject implements GameObject {
     public float calculateHeartBeatRadius(){
     	mTicks++;
         mTicks = mTicks % HeartBeatParameters.getMaxRadius();
+
+        if (mTicks == 0) {
+            GameHolder.getInstance().getSoundManager().beatHeart();
+        }
         
     	if (HeartBeatParameters.isFastHeartbeat()){
     		if(mTicks == 0){
@@ -47,14 +51,14 @@ public class PlayerObject implements GameObject {
     	}
     	return 3 * mTicks; 
     }
-    
+
     public Vector2 getPosition() {
         return mPosition;
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
-        renderables.add(new SpriteRenderable(mSprite));
+        renderables.add(new SpriteRenderable(mSprite), (int) mPosition.y);
     }
 
 }

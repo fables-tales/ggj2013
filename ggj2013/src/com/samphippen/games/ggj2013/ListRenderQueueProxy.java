@@ -55,5 +55,6 @@ final class ListRenderQueueProxy implements RenderQueueProxy {
         for (RenderItem item : mRenderItems) {
             mRenderables.add(item.getRenderable());
         }
+        mRenderItems.clear();
     }
 }

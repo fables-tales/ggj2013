@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.samphippen.games.ggj2013.maze.Graph;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
@@ -119,7 +118,6 @@ public class GameHolder implements ApplicationListener {
         ShaderProgram.pedantic = false;
 
         Constants.setConstants();
-        new Graph(30, 30);
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);

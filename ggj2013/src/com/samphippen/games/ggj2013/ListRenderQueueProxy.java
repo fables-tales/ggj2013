@@ -20,9 +20,9 @@ final class ListRenderQueueProxy implements RenderQueueProxy {
         public int compareTo(RenderItem otherItem) {
             int remoteZOrder = otherItem.getZOrder();
             if (remoteZOrder < mZOrder) {
-                return -1;
-            } else if (remoteZOrder > mZOrder) {
                 return 1;
+            } else if (remoteZOrder > mZOrder) {
+                return -1;
             } else {
                 return 0;
             }

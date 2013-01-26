@@ -8,10 +8,10 @@ public class PlayerObject implements GameObject {
     private static PlayerObject sInstance = null;
 
     private Sprite mSprite = null;
-    
+
     public float mHeartbeatRadius = (float) 1.0;
-    
-    private Vector2 mPosition = new Vector2(0,0);
+
+    private final Vector2 mPosition = new Vector2(0, 0);
     private int mTicks = 0;
 
     private PlayerObject() {
@@ -31,19 +31,17 @@ public class PlayerObject implements GameObject {
         mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
         mTicks++;
-        mHeartbeatRadius = 300*mTicks/100.0f;
+        mHeartbeatRadius = 300 * mTicks / 100.0f;
         mTicks = mTicks % 100;
-        System.out.println(mTicks);
-        
     }
-    
+
     public Vector2 getPosition() {
         return mPosition;
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
-        renderables.add(new SpriteRenderable(mSprite), 0);
+        renderables.add(new SpriteRenderable(mSprite), (int) mPosition.y);
     }
 
 }

@@ -6,25 +6,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MouseObject implements GameObject {
 
-    private Sprite mSprite;
-    
+    private final Sprite mSprite;
+
     public MouseObject() {
         mSprite = GameServices.loadSprite("mouse.png");
     }
-    
+
     @Override
     public void update() {
-        mSprite.setPosition(Gdx.input.getX()-GameServices.WIDTH/2, GameServices.HEIGHT/2 - Gdx.input.getY());
+        mSprite.setPosition(Gdx.input.getX() - GameServices.WIDTH / 2,
+                GameServices.HEIGHT / 2 - Gdx.input.getY());
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite), 0);
+        renderQueue.add(new SpriteRenderable(mSprite), Constants.QUITE_A_LOT);
     }
 
-    
     private static MouseObject sInstance = null;
-    
+
     public static MouseObject getInstance() {
         if (sInstance == null) {
             sInstance = new MouseObject();

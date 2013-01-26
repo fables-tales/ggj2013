@@ -13,8 +13,10 @@ public class SoundManager {
     private static final int NUM_FOOTSTEPS = 9;
     private final Sound mHeartBeat;
     private final Sound mThunk;
+    private final Sound mScreech;
     private long mHeartBeatInstance = 0;
     private long mLastThunkTick = 0;
+    private long mLastScreechTick = 0;
     private final List<Sound> mAmbientSounds = new ArrayList<Sound>();
     private final List<Sound> mFootstepSounds = new ArrayList<Sound>();
 
@@ -43,6 +45,8 @@ public class SoundManager {
             }
         }
         mThunk = Gdx.audio.newSound(Gdx.files.internal("bin/data/thunk.wav"));
+        mScreech = Gdx.audio.newSound(Gdx.files
+                .internal("bin/data/enemy-tmp.wav"));
     }
 
     public void update() {
@@ -71,9 +75,17 @@ public class SoundManager {
 
     public void thunk() {
         long currentTick = GameServices.getTicks();
-        if (currentTick > mLastThunkTick + 40.0) {
+        if (currentTick > mLastThunkTick + 40) {
             mLastThunkTick = currentTick;
             mThunk.play();
+        }
+    }
+
+    public void screech() {
+        long currentTick = GameServices.getTicks();
+        if (currentTick > mLastScreechTick + 240) {
+            mLastScreechTick = currentTick;
+            mScreech.play();
         }
     }
 }

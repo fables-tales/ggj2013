@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ChaserObject implements GameObject {
 
-    private Sprite mSprite;
+    private final Sprite mSprite;
 
     private Vector2 mPosition;
 
@@ -43,8 +43,8 @@ public class ChaserObject implements GameObject {
                                 .get("chaser_spawn_random_radius"))
                         + (float) (1.0f * Constants.sConstants
                                 .get("chaser_spawn_constant_spawn_radius"));
-                float x = (float) ((float) radius * Math.cos(theta));
-                float y = (float) ((float) radius * Math.sin(theta));
+                float x = (float) (radius * Math.cos(theta));
+                float y = (float) (radius * Math.sin(theta));
                 Vector2 position = new Vector2(playerPosition).add(x, y);
                 mPosition = position;
             }
@@ -53,10 +53,12 @@ public class ChaserObject implements GameObject {
                     .get("chaser_heart_attack_distance_trigger")) {
                 player.HeartBeatParameters.setHeartBeatFast();
                 GameHolder.getInstance().redPulse();
-        		player.HeartBeatParameters.chaserPulseCount = 0;
+                GameHolder.getInstance().getSoundManager().screech();
+                player.HeartBeatParameters.chaserPulseCount = 0;
             }
             if (mPosition.dst(playerPosition) > Constants.sConstants
-                    .get("chaser_heart_attack_distance_trigger") && player.HeartBeatParameters.chaserPulseCount >= 5) {
+                    .get("chaser_heart_attack_distance_trigger")
+                    && player.HeartBeatParameters.chaserPulseCount >= 5) {
                 GameHolder.getInstance().whitePulse();
             }
 

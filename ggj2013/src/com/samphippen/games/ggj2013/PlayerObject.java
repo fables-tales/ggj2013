@@ -31,7 +31,10 @@ public class PlayerObject implements GameObject {
         mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
         mTicks++;
-        mHeartbeatRadius = (float)Math.sin(mTicks/Constants.sConstants.get("heartbeat_rate"))+1.0f;
+        mHeartbeatRadius = 300*mTicks/100.0f;
+        mTicks = mTicks % 100;
+        System.out.println(mTicks);
+        
     }
     
     public Vector2 getPosition() {

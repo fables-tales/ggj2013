@@ -57,6 +57,10 @@ public class GameHolder implements ApplicationListener {
     public void create() {
         assert sSharedInstance == null : "duplicate GameHolder";
         sSharedInstance = this;
+        float nativeGamma = 2.4f;
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            nativeGamma = 1.8f;
+        }
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //
@@ -133,10 +137,24 @@ public class GameHolder implements ApplicationListener {
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
                 + "     float intensity = 0.3 * gl_FragColor[0] + 0.59 * gl_FragColor[1] + 0.11 * gl_FragColor[2];"
+<<<<<<< HEAD
                 + "     gl_FragColor[0] = (intensity * mute + gl_FragColor[0] * (1.0 - mute))*channel_r;"
                 + "     gl_FragColor[1] = (intensity * mute + gl_FragColor[1] * (1.0 - mute))*channel_g;"
                 + "     gl_FragColor[2] = (intensity * mute + gl_FragColor[2] * (1.0 - mute))*channel_b;"
                 + "  }" + "  gl_FragColor[3] = tmp;"
+=======
+                + "     gl_FragColor[0] = intensity * mute + gl_FragColor[0] * (1.0 - mute);"
+                + "     gl_FragColor[1] = intensity * mute + gl_FragColor[1] * (1.0 - mute);"
+                + "     gl_FragColor[2] = intensity * mute + gl_FragColor[2] * (1.0 - mute);"
+                + "  }"
+                + "  gl_FragColor[3] = tmp;"
+                + "const float GAMMA_ADJUST = (2.4 / "
+                + nativeGamma
+                + ");"
+                + "gl_FragColor[0] = pow(gl_FragColor[0], GAMMA_ADJUST);"
+                + "gl_FragColor[1] = pow(gl_FragColor[1], GAMMA_ADJUST);"
+                + "gl_FragColor[2] = pow(gl_FragColor[2], GAMMA_ADJUST);"
+>>>>>>> 1c222cadc0a7e801cb25d3ebb4d70b35baec0ced
 
                 + "}";
 
@@ -167,23 +185,26 @@ public class GameHolder implements ApplicationListener {
         mWorldObjects.add(mPlayer);
         mWorldObjects.add(mChaser);
         // Add obstacles to the world
-        // TODO currently makes one
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
                 GameServices.PATH_FINDER_HEIGHT);
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
+        
+        // Distance to winning point destination
+        double endPointMinDistance = Constants.sConstants.get("end_point_distance_min");
+        float endPointRandomisedDistance = (float) (Constants.sConstants.get("end_point_distance_max") - endPointMinDistance);
         Vector2 destination = new Vector2(
-                500 * GameServices.sRng.nextFloat() + 1000,
-                500 * GameServices.sRng.nextFloat() + 1000);
+        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance,
+        		endPointRandomisedDistance * GameServices.sRng.nextFloat() + endPointRandomisedDistance);
         if (GameServices.sRng.nextBoolean()) {
             destination.x = -destination.x;
         }
         if (GameServices.sRng.nextBoolean()) {
             destination.y = -destination.y;
         }
-        // destination = new Vector2(1000, 1000);
+        
         List<Vector2> path = cpf.findPath(
                 GameServices.toPathFinder(mPlayer.getPosition()),
                 GameServices.toPathFinder(destination));

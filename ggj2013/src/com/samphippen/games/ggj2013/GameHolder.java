@@ -36,7 +36,7 @@ public class GameHolder implements ApplicationListener {
     private PlayerObject mPlayer;
     private MouseObject mMouse;
     private ShaderProgram mShader;
-    private final List<Sprite> mPathSprites = new ArrayList<Sprite>();
+    private final List<CampfireSprite> mPathSprites = new ArrayList<CampfireSprite>();
 
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;
@@ -250,8 +250,9 @@ public class GameHolder implements ApplicationListener {
             v = GameServices.fromPathFinder(v);
             if (new Vector2(prev).sub(v).len() > Constants.sConstants
                     .get("waypoint_spacing")) {
-                s.setPosition(v.x-s.getWidth()/2, v.y-s.getHeight()/2);
-                mPathSprites.add(s);
+                CampfireSprite cs = new CampfireSprite();
+                cs.setPosition(v);
+                mPathSprites.add(cs);
                 prev = v;
                 Light campfire = mLightManager.createLight(v);
                 campfire.setInnerRadius(10.0f);
@@ -259,7 +260,7 @@ public class GameHolder implements ApplicationListener {
             }
         }
 
-        mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
+        //mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
 
         Gdx.input.setCursorCatched(true);
 
@@ -327,6 +328,10 @@ public class GameHolder implements ApplicationListener {
         for (GameObject o : mWorldObjects) {
             o.update();
         }
+        
+        for (CampfireSprite cs : mPathSprites) {
+            cs.update();
+        }
 
         mMouse.update();
 
@@ -334,7 +339,7 @@ public class GameHolder implements ApplicationListener {
         mFog.update();
         mFog.setPosition(getCameraOrigin().x, getCameraOrigin().y);
 
-        Sprite endSprite = mPathSprites.get(mPathSprites.size() - 1);
+        CampfireSprite endSprite = mPathSprites.get(mPathSprites.size() - 1);
         if (new Vector2(mPlayer.getPosition()).sub(endSprite.getX(),
                 endSprite.getY()).len() < 40) {
             mDrawWin = true;
@@ -384,7 +389,7 @@ public class GameHolder implements ApplicationListener {
         mPathBatch.setTransformMatrix(new Matrix4().translate(
                 -getCameraOrigin().x, -getCameraOrigin().y, 0));
         mPathBatch.begin();
-        for (Sprite s : mPathSprites) {
+        for (CampfireSprite s : mPathSprites) {
             s.draw(mPathBatch);
         }
         mPathBatch.end();

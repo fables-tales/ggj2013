@@ -15,9 +15,11 @@ public class ObstacleObject implements GameObject {
 	
 	@Override
 	public void update() {
-        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+		PlayerObject player = PlayerObject.getInstance();
+        Vector2 playerPosition = player.getPosition();
         if(playerPosition.dst(mSprite.getX(), mSprite.getY()) < mSprite.getWidth()){
     		mSprite.setColor(0.1f, 1, 0.1f, 1);
+    		player.HeartBeatParameters.setHeartBeatFast();
         }
 	}
 

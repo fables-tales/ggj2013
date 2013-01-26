@@ -1,2 +1,2 @@
-SPEED, 20
-SIZE, 80
+SIZE 80
+player_speed 3

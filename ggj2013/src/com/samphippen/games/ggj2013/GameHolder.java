@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +18,7 @@ import com.samphippen.games.ggj2013.maze.Graph;
 public class GameHolder implements ApplicationListener {
     private OrthographicCamera mCamera;
     private SpriteBatch mBatch;
+    private SpriteBatch mSpecialBatch;
     private BackgroundObject mBackground;
 
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
@@ -28,6 +31,7 @@ public class GameHolder implements ApplicationListener {
     };
     private Vector2 mCameraOrigin;
     private PlayerObject mPlayer;
+    private MouseObject mMouse;
 
     @Override
     public void create() {
@@ -38,10 +42,13 @@ public class GameHolder implements ApplicationListener {
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
         mBatch = new SpriteBatch();
+        mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
         mBackground = new BackgroundObject();
+        mMouse = MouseObject.getInstance();
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
+        Gdx.input.setCursorCatched(true);
     }
 
     private void setCameraOrigin(Vector2 vector2) {
@@ -61,7 +68,14 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void update() {
-        mPlayer.update();
+        if (Gdx.input.isKeyPressed(Keys.ANY_KEY)) {
+            System.exit(1);
+        }
+        for (GameObject o : mWorldObjects) {
+            o.update();
+        }
+        
+        mMouse.update();
     }
 
     private void draw() {
@@ -82,10 +96,17 @@ public class GameHolder implements ApplicationListener {
             r.draw(mBatch);
         }
         mBatch.end();
+        
+        mSpecialBatch.setProjectionMatrix(mCamera.combined);
+        mSpecialBatch.begin();
+        mMouse.draw(mSpecialBatch);
+        mSpecialBatch.end();
+        
+        
     }
 
     private Vector2 getCameraOrigin() {
-        return mCameraOrigin;
+        return mPlayer.getPosition();
     }
 
     @Override

@@ -25,7 +25,7 @@ public class PlayerObject implements GameObject {
 
     @Override
     public void update() {
-        mPosition.add(0.1f, 0f);
+        mPosition.add(InputSystem.mouseSpeedVector());
         mSprite.setPosition(mPosition.x, mPosition.y);
     }
     

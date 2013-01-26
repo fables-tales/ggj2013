@@ -2,13 +2,14 @@ player_speed 3
 dead_zone_size 0.1
 heartbeat_radius 100
 heartbeat_fast_radius 40
-number_fast_pulses 10
+number_fast_pulses 5
 heartbeat_size 150
 heartbeat_min_size 10
 band_width 20
 radial_lighting_a 140000.0
 radial_lighting_b 30000.0
-chaser_speed 0.00
+chaser_heart_attack_distance_trigger 100
+chaser_speed 0.01
 chaser_reappear_delay 2
 chaser_reappear_extra_random_delay 4
 waypoint_spacing 200

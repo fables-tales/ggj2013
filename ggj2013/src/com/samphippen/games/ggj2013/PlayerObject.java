@@ -10,7 +10,7 @@ public class PlayerObject implements GameObject {
     public float mHeartbeatRadius = (float) 1.0;
     private Vector2 mPrevPosition = new Vector2(0, 0);
     private Vector2 mPosition = new Vector2(0, 0);
-    private int mTicks = 0;
+    public int mTicks = 0;
     public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
 
     private final Double NUMPER_FAST_PULSES = Constants.sConstants

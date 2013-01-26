@@ -19,7 +19,8 @@ public class ChaserObject implements GameObject {
 
     @Override
     public void update() {
-        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        PlayerObject player = PlayerObject.getInstance();
+		Vector2 playerPosition = player.getPosition();
 
         Vector2 delta = new Vector2(playerPosition).sub(mPosition);
         if (delta.len() > 200) {
@@ -35,11 +36,19 @@ public class ChaserObject implements GameObject {
                         .get("chaser_reappear_extra_random_delay")))) {
             mOutOfLight = 0;
             float theta = (float) (GameServices.sRng.nextFloat() * Math.PI * 2);
-            float radius = GameServices.sRng.nextFloat() * 200 + 20;
+            float radius = GameServices.sRng.nextFloat()
+                    * (float) (1.0f * Constants.sConstants
+                            .get("chaser_spawn_random_radius"))
+                    + (float) (1.0f * Constants.sConstants
+                            .get("chaser_spawn_constant_spawn_radius"));
             float x = (float) ((float) radius * Math.cos(theta));
             float y = (float) ((float) radius * Math.sin(theta));
             Vector2 position = new Vector2(playerPosition).add(x, y);
             mPosition = position;
+        }
+        // Make heartbeat fast if near
+        if(mPosition.dst(playerPosition) < Constants.sConstants.get("chaser_heart_attack_distance_trigger") ){
+        	player.HeartBeatParameters.setHeartBeatFast();
         }
 
         mSprite.setPosition(mPosition.x, mPosition.y);

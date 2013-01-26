@@ -19,6 +19,7 @@ public class ObstacleObject implements GameObject {
         if (playerPosition.dst(mSprite.getX(), mSprite.getY()) < mSprite
                 .getWidth()) {
             mSprite.setColor(0.1f, 1, 0.1f, 1);
+            PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
         }
     }
 

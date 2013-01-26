@@ -36,7 +36,11 @@ public class ChaserObject implements GameObject {
                         .get("chaser_reappear_extra_random_delay")))) {
             mOutOfLight = 0;
             float theta = (float) (GameServices.sRng.nextFloat() * Math.PI * 2);
-            float radius = GameServices.sRng.nextFloat() * 200 + 20;
+            float radius = GameServices.sRng.nextFloat()
+                    * (float) (1.0f * Constants.sConstants
+                            .get("chaser_spawn_random_radius"))
+                    + (float) (1.0f * Constants.sConstants
+                            .get("chaser_spawn_constant_spawn_radius"));
             float x = (float) ((float) radius * Math.cos(theta));
             float y = (float) ((float) radius * Math.sin(theta));
             Vector2 position = new Vector2(playerPosition).add(x, y);

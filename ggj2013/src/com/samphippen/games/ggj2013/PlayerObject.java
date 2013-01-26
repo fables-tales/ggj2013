@@ -12,7 +12,8 @@ public class PlayerObject implements GameObject {
     private Vector2 mPosition = new Vector2(0, 0);
     public int mTicks = 0;
     public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
-    private double incrementTicks = Constants.sConstants.get("heartbeat_speed_multiplier");
+    private final double incrementTicks = Constants.sConstants
+            .get("heartbeat_speed_multiplier");
 
     private final Double NUMPER_FAST_PULSES = Constants.sConstants
             .get("number_fast_pulses");
@@ -33,7 +34,7 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
-        mSprite.setPosition(mPosition.x-10, mPosition.y-30);
+        mSprite.setPosition(mPosition.x - 10, mPosition.y - 30);
         mHeartbeatRadius = calculateHeartBeatRadius();
     }
 
@@ -43,31 +44,31 @@ public class PlayerObject implements GameObject {
 
     public float calculateHeartBeatRadius() {
         mTicks += incrementTicks;
-        if(mTicks >= HeartBeatParameters.getMaxRadius()){
-        	mTicks = 0;
+        if (mTicks >= HeartBeatParameters.getMaxRadius()) {
+            mTicks = 0;
         }
 
         if (mTicks == 0) {
             GameHolder.getInstance().getSoundManager().beatHeart();
         }
-        
-    	if (HeartBeatParameters.isFastHeartbeat()){
-    		if(mTicks == 0){
-        		HeartBeatParameters.chaserPulseCount++;
-        		HeartBeatParameters.elapsedFastPulses++; 
-        		HeartBeatParameters.treePulseCount++;   			
-    		}
-    		
-        	if(HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES){
-        		HeartBeatParameters.setHeartBeatSlow();
-        		InputSystem.getInstance().setNormal();
-        		GameHolder.getInstance().whitePulse();
-        	}  
-    	} else {
-    	    GameHolder.getInstance().whitePulse();
-    	}    	
 
-        return (float) (mTicks*incrementTicks);
+        if (HeartBeatParameters.isFastHeartbeat()) {
+            if (mTicks == 0) {
+                HeartBeatParameters.chaserPulseCount++;
+                HeartBeatParameters.elapsedFastPulses++;
+                HeartBeatParameters.treePulseCount++;
+            }
+
+            if (HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES) {
+                HeartBeatParameters.setHeartBeatSlow();
+                InputSystem.getInstance().setNormal();
+                GameHolder.getInstance().whitePulse();
+            }
+        } else {
+            GameHolder.getInstance().whitePulse();
+        }
+
+        return (float) (mTicks * incrementTicks);
     }
 
     public Vector2 getPosition() {

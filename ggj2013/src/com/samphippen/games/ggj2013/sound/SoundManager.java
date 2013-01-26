@@ -6,18 +6,21 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.samphippen.games.ggj2013.GameServices;
 
 public class SoundManager {
     private static final int NUM_AMBIENTS = 5;
+    private static final int NUM_FOOTSTEPS = 9;
     private final Sound mHeartBeat;
-    private final Sound mFootsteps;
+    private final Sound mThunk;
     private long mHeartBeatInstance = 0;
-    private long mFootstepInstance = 0;
+    private long mLastThunkTick = 0;
     private final List<Sound> mAmbientSounds = new ArrayList<Sound>();
+    private final List<Sound> mFootstepSounds = new ArrayList<Sound>();
 
     private final boolean DISABLE_AMBIENT = true;
     private final boolean DISABLE_HEARTBEAT = false;
-    private final boolean DISABLE_FOOTSTEPS = true;
+    private final boolean DISABLE_FOOTSTEPS = false;
 
     public SoundManager() {
         if (!DISABLE_HEARTBEAT) {
@@ -27,10 +30,10 @@ public class SoundManager {
             mHeartBeat = null;
         }
         if (!DISABLE_FOOTSTEPS) {
-            mFootsteps = Gdx.audio.newSound(Gdx.files
-                    .internal("bin/data/footsteps.wav"));
-        } else {
-            mFootsteps = null;
+            for (int i = 0; i < NUM_FOOTSTEPS; ++i) {
+                mFootstepSounds.add(Gdx.audio.newSound(Gdx.files
+                        .internal("bin/data/footsteps" + i + ".wav")));
+            }
         }
         if (!DISABLE_AMBIENT) {
             for (int i = 0; i < NUM_AMBIENTS; ++i) {
@@ -39,6 +42,7 @@ public class SoundManager {
                                 "bin/data/ambient_%d.wav", i).toString())));
             }
         }
+        mThunk = Gdx.audio.newSound(Gdx.files.internal("bin/data/thunk.wav"));
     }
 
     public void update() {
@@ -56,7 +60,20 @@ public class SoundManager {
         if (DISABLE_FOOTSTEPS) {
             return;
         }
-        mFootsteps.stop(mFootstepInstance);
-        mFootstepInstance = mFootsteps.play();
+        float pitch = (float) Math.pow(2.0,
+                0.1 * GameServices.sRng.nextGaussian());
+        float volume = (float) (0.4 + 0.05 * GameServices.sRng.nextGaussian());
+        int selectedStep = GameServices.sRng.nextInt(NUM_FOOTSTEPS);
+        Sound stepper = mFootstepSounds.get(selectedStep);
+        long instance = stepper.play(volume);
+        stepper.setPitch(instance, pitch);
+    }
+
+    public void thunk() {
+        long currentTick = GameServices.getTicks();
+        if (currentTick > mLastThunkTick + 40.0) {
+            mLastThunkTick = currentTick;
+            mThunk.play();
+        }
     }
 }

@@ -47,7 +47,7 @@ public class GameHolder implements ApplicationListener {
     private Sprite mLoseSprite;
     private float mPulseR = 1.0f;
     private float mPulseB = 1.0f;
-    private float mPulseG = 1.0f;
+    float mPulseG = 1.0f;
     private boolean mSplash = true;
     private Sprite mSplashSprite;
 

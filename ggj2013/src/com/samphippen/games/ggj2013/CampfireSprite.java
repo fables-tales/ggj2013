@@ -11,9 +11,9 @@ public class CampfireSprite implements GameObject {
 
     private Sprite mOnSprite;
     private Sprite mOffSprite;
-    
+
     private List<Sprite> mOnSprites = new ArrayList<Sprite>();
-    
+
     private List<Sprite> mOffSprites = new ArrayList<Sprite>();
 
     private boolean mOn = true;
@@ -24,8 +24,9 @@ public class CampfireSprite implements GameObject {
         loadFrames(mOnSprites, 24, "campfire_large_", ".png");
         loadFrames(mOffSprites, 20, "campfire_small_", ".png");
     }
-    
-    public void loadFrames(List<Sprite> out, int count, String prefix, String suffix) {
+
+    public void loadFrames(List<Sprite> out, int count, String prefix,
+            String suffix) {
         for (int i = 0; i < count; i++) {
             String filename = "" + i;
             while (filename.length() < 3) {
@@ -57,7 +58,12 @@ public class CampfireSprite implements GameObject {
         mFrameCount++;
         mOnSprite = mOnSprites.get(mFrameCount % mOnSprites.size());
         mOffSprite = mOffSprites.get(mFrameCount % mOffSprites.size());
-        if (PlayerObject.getInstance().getPosition().dst(mPosition) < 40) {
+        boolean paniced = GameHolder.getInstance().mPulseG < 0.999;
+        System.out.println(paniced);
+        System.out.println(GameHolder.getInstance().mPulseG);
+        System.out.println(PlayerObject.getInstance().getPosition().dst(mPosition) < 40);
+        if (PlayerObject.getInstance().getPosition().dst(mPosition) < 40
+                && !paniced) {
             System.out.println("off!");
             mOn = false;
         }
@@ -77,10 +83,12 @@ public class CampfireSprite implements GameObject {
 
     public void draw(SpriteBatch mPathBatch) {
         if (mOn) {
-            mOnSprite.setPosition(mPosition.x-mOnSprite.getWidth()/2, mPosition.y-mOnSprite.getHeight()/2);
+            mOnSprite.setPosition(mPosition.x - mOnSprite.getWidth() / 2,
+                    mPosition.y - mOnSprite.getHeight() / 2);
             mOnSprite.draw(mPathBatch);
         } else {
-            mOffSprite.setPosition(mPosition.x-mOffSprite.getWidth()/2, mPosition.y-mOffSprite.getHeight()/2);
+            mOffSprite.setPosition(mPosition.x - mOffSprite.getWidth() / 2,
+                    mPosition.y - mOffSprite.getHeight() / 2);
             mOffSprite.draw(mPathBatch);
         }
     }

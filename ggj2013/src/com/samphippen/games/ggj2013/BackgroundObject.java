@@ -1,7 +1,5 @@
 package com.samphippen.games.ggj2013;
 
-import java.util.List;
-
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class BackgroundObject implements GameObject {

@@ -2,7 +2,9 @@
 package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -39,6 +41,12 @@ public class GameHolder implements ApplicationListener {
         mCamera = new OrthographicCamera(w, h);
         mBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
+        
+        // Add obstacles to the world
+        // TODO currently makes one
+        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects);
+        obstaclesFactory.makeObstacles();
+        
         mBackground = new BackgroundObject();
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);

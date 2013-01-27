@@ -23,7 +23,7 @@ public class LightManager {
     List<Light> lightsNearest(final Vector2 point, int nLights) {
         Comparator<Light> lightCompar = new Comparator<Light>() {
             private float lightWeight(Light l) {
-                return 0.0f;
+                return point.dst(l.getPosition());
             }
 
             @Override

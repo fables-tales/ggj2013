@@ -13,9 +13,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.pathfind.AStarPathFinder;
 import com.samphippen.games.ggj2013.pathfind.ContinuousPathFinder;
+import com.samphippen.games.ggj2013.quadtree.Quadtree;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
@@ -31,6 +33,7 @@ public class GameHolder implements ApplicationListener {
     private BackgroundObject mBackground;
 
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
+    private Quadtree<GameObject> mQuadWorldObjects;
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
     private final RenderQueueProxy mQueueProxy = new ListRenderQueueProxy(
             mToRender);
@@ -68,7 +71,7 @@ public class GameHolder implements ApplicationListener {
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
-	private int loseCounter = 0;
+    private int loseCounter = 0;
 
     public LightManager getLightManager() {
         return mLightManager;
@@ -201,6 +204,7 @@ public class GameHolder implements ApplicationListener {
                 // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.0) lightness = 0.0;"
                 + " if (lightness > 1.0) lightness = 1.0;"
+                // + " lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
                 + "     float intensity = 0.3 * gl_FragColor[0] + 0.59 * gl_FragColor[1] + 0.11 * gl_FragColor[2];"
@@ -237,6 +241,9 @@ public class GameHolder implements ApplicationListener {
         mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
 
+        mQuadWorldObjects = new Quadtree<GameObject>(-10000.0f, -10000.0f,
+                20000.0f, 20);
+
         mBackground = new BackgroundObject();
         mMouse = MouseObject.getInstance();
         mChaser = new ChaserObject();
@@ -248,8 +255,8 @@ public class GameHolder implements ApplicationListener {
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
                 GameServices.PATH_FINDER_HEIGHT);
-        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
-                cpf);
+        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(
+                mQuadWorldObjects, cpf);
         obstaclesFactory.makeObstacles();
 
         mOb = new OrangeBlob();
@@ -307,6 +314,13 @@ public class GameHolder implements ApplicationListener {
         whitePulse();
     }
 
+    private Rectangle activeRectangle() {
+        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        return new Rectangle(playerPosition.x - 400, playerPosition.y - 300,
+                1600, 900);
+        // return new Rectangle(-2000.0f, -2000.0f, 4000.0f, 4000.0f);
+    }
+
     @Override
     public void dispose() {
         mBatch.dispose();
@@ -347,21 +361,21 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void drawLose() {
-    	InputSystem.disable();
+        InputSystem.disable();
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        loseCounter ++;
-//        mShader.setUniform1fv(
-//                "radial_a",
-//                new float[] { (float) (1 * Constants.sConstants
-//                        .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
-//                0, 1);
-        if(loseCounter > 60 && loseCounter <= 120){
-            GameHolder.getInstance().redPulse();        	
+        loseCounter++;
+        // mShader.setUniform1fv(
+        // "radial_a",
+        // new float[] { (float) (1 * Constants.sConstants
+        // .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
+        // 0, 1);
+        if (loseCounter > 60 && loseCounter <= 120) {
+            GameHolder.getInstance().redPulse();
         }
-        if(loseCounter > 120){
-	        mLoseSprite.setPosition(-400, -300);
-	        mLoseSprite.draw(mSpecialBatch);
+        if (loseCounter > 120) {
+            mLoseSprite.setPosition(-400, -300);
+            mLoseSprite.draw(mSpecialBatch);
         }
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
@@ -390,6 +404,11 @@ public class GameHolder implements ApplicationListener {
         }
         mGuardFrames -= 1;
         for (GameObject o : mWorldObjects) {
+            o.update();
+        }
+        List<GameObject> quadObjects = new ArrayList<GameObject>();
+        mQuadWorldObjects.query(activeRectangle(), quadObjects);
+        for (GameObject o : quadObjects) {
             o.update();
         }
 
@@ -438,6 +457,11 @@ public class GameHolder implements ApplicationListener {
         mToRender.clear();
         for (GameObject object : mWorldObjects) {
             object.emitRenderables(mQueueProxy);
+        }
+        List<GameObject> quadObjects = new ArrayList<GameObject>();
+        mQuadWorldObjects.query(activeRectangle(), quadObjects);
+        for (GameObject o : quadObjects) {
+            o.emitRenderables(mQueueProxy);
         }
         mFog.emitRenderables(mQueueProxy);
         mQueueProxy.commit();

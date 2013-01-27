@@ -12,6 +12,10 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 public class AStarPathFinder implements PathFinder {
+    private boolean outOfBounds(Position x, GridProvider provider) {
+        return x.x < 0 || x.y < 0 || x.x >= provider.getWidth()
+                || x.y >= provider.getHeight();
+    }
 
     @Override
     public List<Position> findPath(Position from, final Position to,
@@ -21,6 +25,10 @@ public class AStarPathFinder implements PathFinder {
             path.add(from);
             return path;
         }
+
+        assert !outOfBounds(from, provider) : "target out of bounds";
+        assert !outOfBounds(to, provider) : "source out of bounds";
+
         int gridWidth = provider.getWidth();
         int gridHeight = provider.getHeight();
         final Map<Position, Integer> gScores = new HashMap<Position, Integer>();
@@ -44,21 +52,26 @@ public class AStarPathFinder implements PathFinder {
         };
         // System.err.println("- STARTING");
         Set<Position> closedSet = new HashSet<Position>();
-        PriorityQueue<Position> openSet = new PriorityQueue<Position>(128,
+        Set<Position> openSetTrack = new HashSet<Position>();
+        PriorityQueue<Position> openSet = new PriorityQueue<Position>(2048,
                 positionComparator);
         gScores.put(from, 0);
         openSet.add(from);
+        openSetTrack.add(from);
         // iteratively build the closed set
         // System.err.println("- BUILD CLOSED SET");
         while (!closedSet.contains(to)) {
             Position next;
             try {
-                next = openSet.poll();
+                next = openSet.remove();
                 // System.err
                 // .printf("- SELECTED ELEMENT %d, %d\n", next.x, next.y);
             } catch (NoSuchElementException openSetEmptyException) {
                 return null; // no path
             }
+            openSetTrack.remove(next);
+            closedSet.add(next);
+            assert gScores.containsKey(next) : "selected open set entry has no g score";
             int currentGScore = gScores.get(next);
             List<Position> neighbours = next.validNeighbours(gridWidth,
                     gridHeight);
@@ -66,15 +79,22 @@ public class AStarPathFinder implements PathFinder {
                 if (closedSet.contains(potentialNextPosition)) {
                     continue;
                 }
+                if (openSetTrack.contains(potentialNextPosition)) {
+                    assert gScores.containsKey(potentialNextPosition) : "open set entry has no g score";
+                    if (gScores.get(potentialNextPosition) < currentGScore + 1) {
+                        gScores.put(potentialNextPosition, currentGScore + 1);
+                    }
+                    continue;
+                }
                 if (provider.isObstacle(potentialNextPosition)) {
                     continue;
                 }
                 gScores.put(potentialNextPosition, currentGScore + 1);
                 openSet.add(potentialNextPosition);
+                openSetTrack.add(potentialNextPosition);
             }
             // System.err.printf("- ADDED %d, %d TO CLOSED SET\n", next.x,
             // next.y);
-            closedSet.add(next);
         }
         // work backwards from g score table to build path
         // System.err.println("Working backwards to build path");

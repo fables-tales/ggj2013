@@ -37,8 +37,8 @@ public class AStarPathFinder implements PathFinder {
             public int compare(Position left, Position right) {
                 int gScoreLeft = gScores.get(left);
                 int gScoreRight = gScores.get(right);
-                int fScoreLeft = left.distanceTo(to);
-                int fScoreRight = right.distanceTo(to);
+                int fScoreLeft = 36 * left.distanceTo(to);
+                int fScoreRight = 36 * right.distanceTo(to);
                 int totalScoreLeft = gScoreLeft + fScoreLeft;
                 int totalScoreRight = gScoreRight + fScoreRight;
                 if (totalScoreLeft < totalScoreRight) {
@@ -53,6 +53,7 @@ public class AStarPathFinder implements PathFinder {
         // System.err.println("- STARTING");
         Set<Position> closedSet = new HashSet<Position>();
         Set<Position> openSetTrack = new HashSet<Position>();
+        Map<Position, Position> sources = new HashMap<Position, Position>();
         PriorityQueue<Position> openSet = new PriorityQueue<Position>(2048,
                 positionComparator);
         gScores.put(from, 0);
@@ -79,17 +80,19 @@ public class AStarPathFinder implements PathFinder {
                 if (closedSet.contains(potentialNextPosition)) {
                     continue;
                 }
+                int localScore = provider.isObstacle(potentialNextPosition) ? 36
+                        : 1;
+                int potentialNextScore = currentGScore + localScore;
                 if (openSetTrack.contains(potentialNextPosition)) {
                     assert gScores.containsKey(potentialNextPosition) : "open set entry has no g score";
-                    if (gScores.get(potentialNextPosition) < currentGScore + 1) {
-                        gScores.put(potentialNextPosition, currentGScore + 1);
+                    if (gScores.get(potentialNextPosition) < potentialNextScore) {
+                        gScores.put(potentialNextPosition, potentialNextScore);
+                        sources.put(potentialNextPosition, next);
                     }
                     continue;
                 }
-                if (provider.isObstacle(potentialNextPosition)) {
-                    continue;
-                }
-                gScores.put(potentialNextPosition, currentGScore + 1);
+                sources.put(potentialNextPosition, next);
+                gScores.put(potentialNextPosition, potentialNextScore);
                 openSet.add(potentialNextPosition);
                 openSetTrack.add(potentialNextPosition);
             }
@@ -102,22 +105,8 @@ public class AStarPathFinder implements PathFinder {
         path.add(to);
         Position currentPosition = to;
         while (!currentPosition.equals(from)) {
-            List<Position> neighbours = currentPosition.validNeighbours(
-                    gridWidth, gridHeight);
-            int currentGScore = gScores.get(currentPosition);
-            for (Position potentialPrevPosition : neighbours) {
-                if (!gScores.containsKey(potentialPrevPosition)) {
-                    continue;
-                }
-                int potentialGScore = gScores.get(potentialPrevPosition);
-                if (potentialGScore == currentGScore - 1) {
-                    currentPosition = potentialPrevPosition;
-                    path.add(currentPosition);
-                    // System.err.printf("Got next point %d, %d\n",
-                    // currentPosition.x, currentPosition.y);
-                    break;
-                }
-            }
+            currentPosition = sources.get(currentPosition);
+            path.add(currentPosition);
         }
         // System.err.println("done!");
         // return an adaptor which reverses the list

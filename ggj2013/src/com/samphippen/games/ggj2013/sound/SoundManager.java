@@ -17,6 +17,7 @@ public class SoundManager {
     private long mHeartBeatInstance = 0;
     private long mLastThunkTick = 0;
     private long mLastScreechTick = 0;
+    private long mLastStepTick = 0;
     private final List<Sound> mAmbientSounds = new ArrayList<Sound>();
     private final List<Sound> mFootstepSounds = new ArrayList<Sound>();
 
@@ -66,7 +67,11 @@ public class SoundManager {
         }
         float pitch = (float) Math.pow(2.0,
                 0.1 * GameServices.sRng.nextGaussian());
-        float volume = (float) (0.4 + 0.05 * GameServices.sRng.nextGaussian());
+        long currentTick = GameServices.getTicks();
+        float baseVolume = currentTick - mLastStepTick > 35 ? 0.4f : 0.7f;
+        mLastStepTick = currentTick;
+        float volume = (float) (baseVolume + 0.05 * GameServices.sRng
+                .nextGaussian());
         int selectedStep = GameServices.sRng.nextInt(NUM_FOOTSTEPS);
         Sound stepper = mFootstepSounds.get(selectedStep);
         long instance = stepper.play(volume);

@@ -1,5 +1,8 @@
 package com.samphippen.games.ggj2013;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
@@ -18,20 +21,41 @@ public class PlayerObject implements GameObject {
             .get("number_fast_pulses");
 
     private Sprite mCurrentSprite;
-    private final Sprite mUpSprite;
-    private final Sprite mDownSprite;
-    private final Sprite mLeftSprite;
-    private final Sprite mRightSprite;
+    private final List<Sprite> mUpSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mDownSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mLeftSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mRightSprites = new ArrayList<Sprite>();
+
+    private Sprite currentSprite(List<Sprite> sourceList) {
+        final int framesPerFrame = 1;
+        int frame = (int) (GameServices.getTicks()
+                % (framesPerFrame * sourceList.size()) / framesPerFrame);
+        return sourceList.get(frame);
+    }
+
+    public void loadFrames(List<Sprite> out, int start, int end, String prefix,
+            String suffix) {
+        for (int i = start; i <= end; i++) {
+            String filename = "" + i;
+            while (filename.length() < 3) {
+                filename = "0" + filename;
+            }
+
+            filename = prefix + filename + suffix;
+            Sprite s = GameServices.loadSprite(filename);
+            out.add(s);
+        }
+    }
 
     public static void reset() {
         sInstance = null;
     }
 
     private PlayerObject() {
-        mLeftSprite = GameServices.loadSprite("player_left.png");
-        mRightSprite = GameServices.loadSprite("player_right.png");
-        mUpSprite = GameServices.loadSprite("player_back.png");
-        mDownSprite = GameServices.loadSprite("player.png");
+        loadFrames(mLeftSprites, 0, 0, "player_left_", ".png");
+        loadFrames(mRightSprites, 0, 0, "player_right_", ".png");
+        loadFrames(mUpSprites, 0, 0, "player_back_", ".png");
+        loadFrames(mDownSprites, 0, 0, "player_", ".png");
     }
 
     public static PlayerObject getInstance() {
@@ -47,17 +71,17 @@ public class PlayerObject implements GameObject {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
         Vector2 delta = new Vector2(mPosition).sub(mPrevPosition);
-        if (Math.abs(delta.y) > Math.abs(delta.x)) {
+        if (Math.abs(delta.y) >= Math.abs(delta.x)) {
             if (delta.y > 0) {
-                mCurrentSprite = mUpSprite;
+                mCurrentSprite = currentSprite(mUpSprites);
             } else {
-                mCurrentSprite = mDownSprite;
+                mCurrentSprite = currentSprite(mDownSprites);
             }
         } else {
             if (delta.x < 0) {
-                mCurrentSprite = mLeftSprite;
+                mCurrentSprite = currentSprite(mLeftSprites);
             } else {
-                mCurrentSprite = mRightSprite;
+                mCurrentSprite = currentSprite(mRightSprites);
             }
         }
         mCurrentSprite.setPosition(mPosition.x - 10, mPosition.y - 30);

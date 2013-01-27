@@ -44,3 +44,4 @@ exhausted_run_time 300
 speed_smoothness 0.84
 campfire_safe_zone_size 100
 chaser_constant_speed 1
+tree_sprite_scale 1

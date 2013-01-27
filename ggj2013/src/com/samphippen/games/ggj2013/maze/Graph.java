@@ -22,7 +22,6 @@ public class Graph {
         }
 
         buildGraph(width, height);
-        System.out.println(shortestPath(new Vector2(0,0), new Vector2(1,1)));
     }
 
     private List<Vertex> shortestPath(Vector2 start, Vector2 end) {

@@ -16,7 +16,7 @@ public class Constants {
     public static void setConstants() {
         File constantsFile = Gdx.files.internal("bin/data/constants.txt")
                 .file();
-        System.out.println(constantsFile.getAbsolutePath());
+        
         try {
             ConstantsReader.readConstants(new FileInputStream(constantsFile));
         } catch (FileNotFoundException missingFileException) {

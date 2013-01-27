@@ -93,7 +93,7 @@ public class InputSystem {
             ++mRunTime;
             if (mRunTime > Constants.getInt("exhausted_run_time")) {
                 mExhausted = true;
-                System.err.println("exhausted");
+                
             }
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
             GameHolder.getInstance().getSoundManager().setPantingTarget(1.0f);
@@ -116,7 +116,6 @@ public class InputSystem {
     }
 
     public void setSlow() {
-        System.out.println("slow");
         mSpeed = Constants.getFloat("tree_slow_speed");
     }
 

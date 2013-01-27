@@ -9,6 +9,7 @@ public class ObstacleObject implements GameObject {
 
     public ObstacleObject(Vector2 position) {
         mSprite = GameServices.loadSprite("tree.png");
+        mSprite.setScale(Constants.getFloat("tree_sprite_scale"));
         mSprite.setPosition(position.x, position.y);
     }
 

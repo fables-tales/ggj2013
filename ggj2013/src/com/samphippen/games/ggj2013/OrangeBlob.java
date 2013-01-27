@@ -28,7 +28,8 @@ public class OrangeBlob implements GameObject {
     public void update() {
         Vector2 pos = GameHolder.getInstance().getFirstOnFire();
 
-        if (mCurrentAlpha > ALPHA_STOP_SMALL && mFadeOut && !(mSprite.getX() == 0 && mSprite.getY() == 0)) {
+        if (mCurrentAlpha > ALPHA_STOP_SMALL && mFadeOut
+                && !(mSprite.getX() == 0 && mSprite.getY() == 0)) {
             mCurrentAlpha *= Constants.getFloat("blob_alpha_fade_out");
         } else if (mFadeOut) {
             mCurrentAlpha = ALPHA_STOP_SMALL;
@@ -98,8 +99,12 @@ public class OrangeBlob implements GameObject {
     }
 
     public void draw(SpriteBatch sb) {
-        mSprite.setColor(1, 1, 1, mCurrentAlpha);
-        mSprite.draw(sb);
+        if (mSprite.getX() == 0 && mSprite.getY() == 0) {
+
+        } else {
+            mSprite.setColor(1, 1, 1, mCurrentAlpha);
+            mSprite.draw(sb);
+        }
 
     }
 

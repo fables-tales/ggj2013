@@ -13,9 +13,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.pathfind.AStarPathFinder;
 import com.samphippen.games.ggj2013.pathfind.ContinuousPathFinder;
+import com.samphippen.games.ggj2013.quadtree.Quadtree;
 import com.samphippen.games.ggj2013.sound.SoundManager;
 
 public class GameHolder implements ApplicationListener {
@@ -31,6 +33,7 @@ public class GameHolder implements ApplicationListener {
     private BackgroundObject mBackground;
 
     private final List<GameObject> mWorldObjects = new ArrayList<GameObject>();
+    private Quadtree<GameObject> mQuadWorldObjects;
     private final List<Renderable> mToRender = new ArrayList<Renderable>();
     private final RenderQueueProxy mQueueProxy = new ListRenderQueueProxy(
             mToRender);
@@ -203,6 +206,7 @@ public class GameHolder implements ApplicationListener {
                 // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.0) lightness = 0.0;"
                 + " if (lightness > 1.0) lightness = 1.0;"
+                // + " lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"
                 + "     float intensity = 0.3 * gl_FragColor[0] + 0.59 * gl_FragColor[1] + 0.11 * gl_FragColor[2];"
@@ -239,6 +243,9 @@ public class GameHolder implements ApplicationListener {
         mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
 
+        mQuadWorldObjects = new Quadtree<GameObject>(-10000.0f, -10000.0f,
+                20000.0f, 20);
+
         mBackground = new BackgroundObject();
         mMouse = MouseObject.getInstance();
         mChaser = new ChaserObject();
@@ -250,8 +257,8 @@ public class GameHolder implements ApplicationListener {
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
                 GameServices.PATH_FINDER_HEIGHT);
-        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
-                cpf);
+        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(
+                mQuadWorldObjects, cpf);
         obstaclesFactory.makeObstacles();
 
         mOb = new OrangeBlob();
@@ -297,8 +304,8 @@ public class GameHolder implements ApplicationListener {
                 prev = v;
             }
         }
-        
-        mPathSprites.get(mPathSprites.size()-1).setLast();
+
+        mPathSprites.get(mPathSprites.size() - 1).setLast();
 
         // Make tree ring for starting position
         obstaclesFactory.makeTreeRing(mPathSprites.get(0).mPosition.angle());
@@ -309,6 +316,13 @@ public class GameHolder implements ApplicationListener {
 
         mSoundManager = new SoundManager();
         whitePulse();
+    }
+
+    private Rectangle activeRectangle() {
+        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        return new Rectangle(playerPosition.x - 400, playerPosition.y - 300,
+                1600, 900);
+        // return new Rectangle(-2000.0f, -2000.0f, 4000.0f, 4000.0f);
     }
 
     @Override
@@ -354,7 +368,6 @@ public class GameHolder implements ApplicationListener {
     private float mBlackAlpha = 0;
 
     private void drawLose() {
-        System.out.println("gameover!");
         InputSystem.disable();
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
@@ -366,10 +379,10 @@ public class GameHolder implements ApplicationListener {
             } else {
                 mBlackAlpha = 1;
             }
-            
+
             mBlackSprite.setPosition(-400, -300);
             mBlackSprite.setColor(1, 1, 1, mBlackAlpha);
-            mLoseSprite.setColor(1,1,1,0);
+            mLoseSprite.setColor(1, 1, 1, 0);
             mBlackSprite.draw(mSpecialBatch);
         }
         if (loseCounter > 110) {
@@ -379,9 +392,8 @@ public class GameHolder implements ApplicationListener {
                 mEndAlpha = 1;
             }
             mLoseSprite.setPosition(-400, -300);
-            mBlackSprite.setColor(0,0,0,1);
+            mBlackSprite.setColor(0, 0, 0, 1);
             mLoseSprite.setColor(1, 1, 1, mEndAlpha);
-            
         }
         mBlackSprite.draw(mSpecialBatch);
         mLoseSprite.draw(mSpecialBatch);
@@ -414,6 +426,11 @@ public class GameHolder implements ApplicationListener {
         for (GameObject o : mWorldObjects) {
             o.update();
         }
+        List<GameObject> quadObjects = new ArrayList<GameObject>();
+        mQuadWorldObjects.query(activeRectangle(), quadObjects);
+        for (GameObject o : quadObjects) {
+            o.update();
+        }
 
         /*
          * for (CampfireSprite cs : mPathSprites) { cs.update(); }
@@ -438,7 +455,6 @@ public class GameHolder implements ApplicationListener {
             mDrawLose = true;
         }
 
-        
         Vector2 mouseSpeed = InputSystem.mouseSpeedVector();
         float totalSpeed = mouseSpeed.len();
         int stepTime = 1; // prevents usage
@@ -460,6 +476,11 @@ public class GameHolder implements ApplicationListener {
         mToRender.clear();
         for (GameObject object : mWorldObjects) {
             object.emitRenderables(mQueueProxy);
+        }
+        List<GameObject> quadObjects = new ArrayList<GameObject>();
+        mQuadWorldObjects.query(activeRectangle(), quadObjects);
+        for (GameObject o : quadObjects) {
+            o.emitRenderables(mQueueProxy);
         }
         mFog.emitRenderables(mQueueProxy);
         mQueueProxy.commit();
@@ -544,7 +565,6 @@ public class GameHolder implements ApplicationListener {
                 mTitle2Alpha = 1;
             }
 
-            
             mTitle1Sprite.setColor(1, 1, 1, mTitle1Alpha);
             mTitle2Sprite.setColor(1, 1, 1, mTitle2Alpha);
             mTitle1Sprite.setPosition(0, 0);

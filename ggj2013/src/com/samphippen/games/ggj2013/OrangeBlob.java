@@ -3,7 +3,6 @@ package com.samphippen.games.ggj2013;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.sun.tools.internal.jxc.apt.Const;
 
 public class OrangeBlob implements GameObject {
 

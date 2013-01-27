@@ -10,6 +10,7 @@ public class Main {
         cfg.title = "ggj2013";
         cfg.useGL20 = true;
         cfg.width = 800;
+        cfg.fullscreen = true;
         cfg.height = 600;
 
         new LwjglApplication(new GameHolder(), cfg);

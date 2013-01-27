@@ -16,6 +16,7 @@ public class SoundManager {
     private final Sound mThunk;
     private final Sound mScreech;
     private final Music mPanting;
+    private final Music mWind;
     private float mPantingTarget = 0.0f;
     private float mPantingLevel = 0.0f;
     private long mHeartBeatInstance = 0;
@@ -57,6 +58,10 @@ public class SoundManager {
         mPanting.setLooping(true);
         mPanting.play();
         mPanting.setVolume(0);
+        mWind = Gdx.audio.newMusic(Gdx.files.internal("bin/data/wind.wav"));
+        mWind.play();
+        mWind.setLooping(true);
+        mWind.setVolume(0.25f);
     }
 
     public void update() {

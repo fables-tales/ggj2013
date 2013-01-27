@@ -10,7 +10,7 @@ public class ObstaclesFactory {
     private final List<GameObject> mWorldObjects;
     private final ContinuousPathFinder mCpf;
 
-    private final float OBSTACLE_FIELD_SIZE = 4000.0f;
+    private final float OBSTACLE_FIELD_SIZE = 6000.0f;
 
     public ObstaclesFactory(List<GameObject> worldObjects,
             ContinuousPathFinder cpf) {

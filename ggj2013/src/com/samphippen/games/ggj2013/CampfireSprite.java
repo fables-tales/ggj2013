@@ -9,15 +9,15 @@ import com.badlogic.gdx.math.Vector2;
 public class CampfireSprite implements GameObject {
 
     private Sprite mOnSprite;
-    private Sprite mOffSprite;
+    private final Sprite mOffSprite;
 
     private final List<Sprite> mOnSprites = new ArrayList<Sprite>();
-
-    private final List<Sprite> mOffSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mTransitionSprites = new ArrayList<Sprite>();
 
     private boolean mOn = true;
+    private int mTransitionFrame = 0;
     private Vector2 mPosition;
-    private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -64.0f);
+    private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -46.0f);
 
     private final Light mLight;
 
@@ -26,17 +26,18 @@ public class CampfireSprite implements GameObject {
         mLight.setInnerRadius(10.0f);
         mLight.setOuterRadius(50.0f);
         mLight.setIntensity(0.7f);
-        loadFrames(mOnSprites, 24, "campfire_large_", ".png");
-        loadFrames(mOffSprites, 20, "campfire_small_", ".png");
+        loadFrames(mOnSprites, 0, 24, "campfire_large_", ".png");
+        loadFrames(mTransitionSprites, 30, 59, "campfire_transition_", ".png");
+        mOffSprite = GameServices.loadSprite("campfire-off.png");
     }
     
     public boolean getOn() {
         return mOn;
     }
 
-    public void loadFrames(List<Sprite> out, int count, String prefix,
+    public void loadFrames(List<Sprite> out, int start, int end, String prefix,
             String suffix) {
-        for (int i = 0; i < count; i++) {
+        for (int i = start; i <= end; i++) {
             String filename = "" + i;
             while (filename.length() < 3) {
                 filename = "0" + filename;
@@ -64,29 +65,37 @@ public class CampfireSprite implements GameObject {
 
     @Override
     public void update() {
+        if (!mOn) {
+            ++mTransitionFrame;
+        }
         mFrameCount++;
         mOnSprite = mOnSprites.get(mFrameCount % mOnSprites.size());
-        mOffSprite = mOffSprites.get(mFrameCount % mOffSprites.size());
         boolean paniced = GameHolder.getInstance().mPulseG < 0.999;
         if (PlayerObject.getInstance().getPosition().dst(mPosition) < 40
                 && !paniced) {
             mOn = false;
             mLight.setInnerRadius(3.0f);
-            mLight.setOuterRadius(28.0f);
+            mLight.setOuterRadius(50.0f);
+            mLight.setIntensity(0.3f);
         }
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
         Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
+        int zOrder = (int) mPosition.y + 10;
         if (mOn) {
             mOnSprite.setPosition(drawPosition.x, drawPosition.y);
-            renderQueue.add(new SpriteRenderable(mOnSprite),
-                    (int) mPosition.y + 10);
+            renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);
         } else {
-            mOffSprite.setPosition(drawPosition.x, drawPosition.y);
-            renderQueue.add(new SpriteRenderable(mOffSprite),
-                    (int) mPosition.y + 10);
+            if (mTransitionFrame >= mTransitionSprites.size()) {
+                mOffSprite.setPosition(drawPosition.x, drawPosition.y + 5.0f);
+                renderQueue.add(new SpriteRenderable(mOffSprite), zOrder);
+            } else {
+                Sprite newSprite = mTransitionSprites.get(mTransitionFrame);
+                newSprite.setPosition(drawPosition.x, drawPosition.y);
+                renderQueue.add(new SpriteRenderable(newSprite), zOrder);
+            }
         }
     }
 

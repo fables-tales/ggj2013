@@ -6,19 +6,57 @@ import com.badlogic.gdx.math.Vector2;
 public class ChaserObject implements GameObject {
 
     private final Sprite mSprite;
+    private final Sprite mRevealSprite;
 
     private Vector2 mPosition;
+    private int mHighlightFreeze = 0;
+
+    private Light mHighlight = null;
 
     private int mOutOfLight;
+    private boolean mInRadius;
 
     public ChaserObject() {
         mSprite = GameServices.loadSprite("enemy.png");
+        mRevealSprite = GameServices.loadSprite("enemy_reveal.png");
         mSprite.setColor(3.0f, 0.1f, 0.1f, 1.0f);
         mPosition = new Vector2(3000, 3000);
     }
 
+    private void highlight() {
+        if (mHighlight != null) {
+            GameHolder.getInstance().getLightManager().disposeLight(mHighlight);
+        }
+        Vector2 highlightPosition = mPosition.cpy().add(
+                new Vector2(mRevealSprite.getWidth() / 2.0f, mRevealSprite
+                        .getHeight() / 2.0f));
+        mHighlight = GameHolder.getInstance().getLightManager()
+                .createLight(highlightPosition);
+        mHighlight.setInnerRadius(Constants
+                .getFloat("chaser_highlight_inner_radius"));
+        mHighlight.setOuterRadius(Constants
+                .getFloat("chaser_highlight_outer_radius"));
+        mHighlight.setIntensity(Constants
+                .getFloat("chaser_highlight_start_intensity"));
+        mHighlightFreeze = Constants.getInt("chaser_highlight_freeze_ticks");
+    }
+
     @Override
     public void update() {
+        if (mHighlight != null) {
+            final float HIGHLIGHT_DECAY_RATE = Constants
+                    .getFloat("chaser_highlight_decay_rate");
+            mHighlight.setIntensity(mHighlight.getIntensity()
+                    * HIGHLIGHT_DECAY_RATE);
+            if (mHighlight.getIntensity() < 0.05f) {
+                GameHolder.getInstance().getLightManager()
+                        .disposeLight(mHighlight);
+                mHighlight = null;
+            }
+        }
+        if (mHighlightFreeze > 0) {
+            --mHighlightFreeze;
+        }
         PlayerObject player = PlayerObject.getInstance();
         if (player.getPosition().len() > Constants.getFloat("safe_zone_size")) {
             Vector2 playerPosition = player.getPosition();
@@ -26,7 +64,8 @@ public class ChaserObject implements GameObject {
             Vector2 delta = new Vector2(playerPosition).sub(mPosition);
             if (delta.len() > Constants.getFloat("chaser_light_distance")) {
                 mOutOfLight++;
-            } else if (GameServices.getTicks() % 1 == 0) {
+            } else if (GameServices.getTicks() % 1 == 0
+                    && mHighlightFreeze == 0) {
                 mPosition.add(delta.mul((float) (1.0f * Constants.sConstants
                         .get("chaser_speed"))));
             }
@@ -52,10 +91,16 @@ public class ChaserObject implements GameObject {
             if (mPosition.dst(playerPosition) < Constants.sConstants
                     .get("chaser_heart_attack_distance_trigger")) {
                 player.HeartBeatParameters.setHeartBeatFast();
+                if (!mInRadius) {
+                    highlight();
+                }
                 GameHolder.getInstance().redPulse();
                 GameHolder.getInstance().amplifyPulse();
                 GameHolder.getInstance().getSoundManager().screech();
                 player.HeartBeatParameters.chaserPulseCount = 0;
+                mInRadius = true;
+            } else {
+                mInRadius = false;
             }
             if (mPosition.dst(playerPosition) > Constants.sConstants
                     .get("chaser_heart_attack_distance_trigger")
@@ -65,12 +110,17 @@ public class ChaserObject implements GameObject {
 
         }
         mSprite.setPosition(mPosition.x, mPosition.y);
-
+        mRevealSprite.setPosition(mPosition.x, mPosition.y);
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite), (int) mPosition.y);
+        if (mHighlightFreeze > 0) {
+            renderQueue.add(new SpriteRenderable(mRevealSprite),
+                    -Constants.QUITE_A_LOT);
+        } else {
+            renderQueue.add(new SpriteRenderable(mSprite), (int) mPosition.y);
+        }
     }
 
     public Vector2 getPosition() {

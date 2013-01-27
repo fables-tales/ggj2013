@@ -3,7 +3,8 @@ package com.samphippen.games.ggj2013;
 import com.badlogic.gdx.math.Vector2;
 
 public class Light {
-    private float mInnerRadius, mOuterRadius;
+    private float mInnerRadius = 1.0f, mOuterRadius = 10.0f;
+    private float mIntensity = 1.0f;
     private final Vector2 mPosition;
 
     Light(Vector2 pos) {
@@ -28,5 +29,13 @@ public class Light {
 
     public Vector2 getPosition() {
         return mPosition;
+    }
+
+    public float getIntensity() {
+        return mIntensity;
+    }
+
+    public void setIntensity(float mIntensity) {
+        this.mIntensity = mIntensity;
     }
 }

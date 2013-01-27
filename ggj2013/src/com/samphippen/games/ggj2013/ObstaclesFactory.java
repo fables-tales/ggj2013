@@ -34,7 +34,7 @@ public class ObstaclesFactory {
 
             mWorldObjects.add(obstacle);
             mCpf.addObstacle(GameServices.toPathFinder(obstaclePosition),
-                    Constants.getFloat("obstacle_width"));
+                    Constants.getFloat("obstacle_width")*2);
         }
     }
     

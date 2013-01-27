@@ -268,11 +268,6 @@ public class GameHolder implements ApplicationListener {
 
         mSoundManager = new SoundManager();
         whitePulse();
-
-        Light campfire = mLightManager.createLight(PlayerObject.getInstance()
-                .getPosition().add(0.0f, 100.0f));
-        campfire.setInnerRadius(20.0f);
-        campfire.setOuterRadius(70.0f);
     }
 
     @Override

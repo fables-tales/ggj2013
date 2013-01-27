@@ -171,7 +171,7 @@ public class GameHolder implements ApplicationListener {
                 + createLocalLightLightnessModifier()
                 // TODO change to 0.1
                 // + " if (lightness < 1.0) lightness = 1.0;"
-                + " if (lightness < 0.1) lightness = 0.1;"
+                + " if (lightness < 0.0) lightness = 0.0;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
                 + "  if (1 == 1) {"

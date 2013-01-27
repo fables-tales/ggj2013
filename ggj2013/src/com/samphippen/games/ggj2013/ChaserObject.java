@@ -32,16 +32,20 @@ public class ChaserObject implements GameObject {
                         .getHeight() / 2.0f));
         mHighlight = GameHolder.getInstance().getLightManager()
                 .createLight(highlightPosition);
-        mHighlight.setInnerRadius(100.0f);
-        mHighlight.setOuterRadius(120.0f);
-        mHighlight.setIntensity(1.0f);
-        mHighlightFreeze = 40;
+        mHighlight.setInnerRadius(Constants
+                .getFloat("chaser_highlight_inner_radius"));
+        mHighlight.setOuterRadius(Constants
+                .getFloat("chaser_highlight_outer_radius"));
+        mHighlight.setIntensity(Constants
+                .getFloat("chaser_highlight_start_intensity"));
+        mHighlightFreeze = Constants.getInt("chaser_highlight_freeze_ticks");
     }
 
     @Override
     public void update() {
         if (mHighlight != null) {
-            final float HIGHLIGHT_DECAY_RATE = 0.94f;
+            final float HIGHLIGHT_DECAY_RATE = Constants
+                    .getFloat("chaser_highlight_decay_rate");
             mHighlight.setIntensity(mHighlight.getIntensity()
                     * HIGHLIGHT_DECAY_RATE);
             if (mHighlight.getIntensity() < 0.05f) {

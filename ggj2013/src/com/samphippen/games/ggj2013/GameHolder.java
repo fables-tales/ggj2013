@@ -1,6 +1,7 @@
 package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -37,6 +38,10 @@ public class GameHolder implements ApplicationListener {
     private MouseObject mMouse;
     private ShaderProgram mShader;
     private final List<CampfireSprite> mPathSprites = new ArrayList<CampfireSprite>();
+
+    public List<CampfireSprite> getPathSprites() {
+        return Collections.unmodifiableList(mPathSprites);
+    }
 
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;

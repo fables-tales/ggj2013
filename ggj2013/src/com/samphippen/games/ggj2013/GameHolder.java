@@ -297,6 +297,8 @@ public class GameHolder implements ApplicationListener {
                 prev = v;
             }
         }
+        
+        mPathSprites.get(mPathSprites.size()-1).setLast();
 
         // Make tree ring for starting position
         obstaclesFactory.makeTreeRing(mPathSprites.get(0).mPosition.angle());

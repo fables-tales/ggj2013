@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.jmx.remote.util.Service;
 
 public class CampfireSprite implements GameObject {
 
@@ -20,6 +21,8 @@ public class CampfireSprite implements GameObject {
     private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -46.0f);
 
     private final Light mLight;
+    
+    private Sprite mLastSprite;
 
     public CampfireSprite(Light light) {
         mLight = light;
@@ -29,10 +32,17 @@ public class CampfireSprite implements GameObject {
         loadFrames(mOnSprites, 0, 24, "campfire_large_", ".png");
         loadFrames(mTransitionSprites, 30, 59, "campfire_transition_", ".png");
         mOffSprite = GameServices.loadSprite("campfire-off.png");
+        mLastSprite = GameServices.loadSprite("exit.png");
     }
-    
+
     public boolean getOn() {
         return mOn;
+    }
+
+    private boolean mUserLastSprite = false;
+
+    public void setLast() {
+        mUserLastSprite = true;
     }
 
     public void loadFrames(List<Sprite> out, int start, int end, String prefix,
@@ -82,8 +92,13 @@ public class CampfireSprite implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
         int zOrder = (int) mPosition.y + 10;
+        if (mUserLastSprite) {
+            mLastSprite.setPosition(mPosition.x, mPosition.y);
+            renderQueue.add(new SpriteRenderable(mLastSprite), zOrder);
+        }
+        Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
+
         if (mOn) {
             mOnSprite.setPosition(drawPosition.x, drawPosition.y);
             renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);

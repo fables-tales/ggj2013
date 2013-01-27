@@ -53,6 +53,7 @@ public class ChaserObject implements GameObject {
                     .get("chaser_heart_attack_distance_trigger")) {
                 player.HeartBeatParameters.setHeartBeatFast();
                 GameHolder.getInstance().redPulse();
+                GameHolder.getInstance().amplifyPulse();
                 GameHolder.getInstance().getSoundManager().screech();
                 player.HeartBeatParameters.chaserPulseCount = 0;
             }

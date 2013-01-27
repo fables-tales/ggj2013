@@ -51,6 +51,9 @@ public class GameHolder implements ApplicationListener {
     private boolean mSplash = true;
     private Sprite mSplashSprite;
 
+    float mRadialAdjust = 0.0f;
+    private long mLastAmplificationTick = 0;
+
     private static final int NLIGHTS = 8;
     private final LightManager mLightManager = new LightManager();
     private int mGuardFrames;
@@ -320,6 +323,10 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void update() {
+        mRadialAdjust *= 0.98f;
+        if (mRadialAdjust > 0.01f) {
+            System.out.printf("RA = %f\n", mRadialAdjust);
+        }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             System.exit(1);
         }
@@ -418,15 +425,18 @@ public class GameHolder implements ApplicationListener {
         mShader.setUniform1fv("max_glow_radius",
                 new float[] { maxGlowRadius * 1 }, 0, 1);
 
-        mShader.setUniform1fv("radial_a",
+        mShader.setUniform1fv(
+                "radial_a",
                 new float[] { (float) (1 * Constants.sConstants
-                        .get("radial_lighting_a")) }, 0, 1);
+                        .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
+                0, 1);
         mShader.setUniform1fv("radial_b",
                 new float[] { (float) (1 * Constants.sConstants
-                        .get("radial_lighting_b")) }, 0, 1);
+                        .get("radial_lighting_b") * (1.0f - mRadialAdjust)) },
+                0, 1);
         mShader.setUniform1fv("band_width",
                 new float[] { (float) (1 * Constants.sConstants
-                        .get("band_width")) }, 0, 1);
+                        .get("band_width") * (1.0f + mRadialAdjust)) }, 0, 1);
         float mv = 0.6f - 0.6f * glowRadius;
         if (mv < 0) {
             mv = 0;
@@ -468,6 +478,15 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void resume() {
+    }
+
+    public void amplifyPulse() {
+        long currentTick = GameServices.getTicks();
+        if (currentTick - mLastAmplificationTick < 240) {
+            return;
+        }
+        mLastAmplificationTick = currentTick;
+        mRadialAdjust = 1.0f;
     }
 
     public void redPulse() {

@@ -43,7 +43,8 @@ public class PlayerObject implements GameObject {
     }
 
     public float calculateHeartBeatRadius() {
-        mTicks += incrementTicks;
+        mTicks += incrementTicks
+                * (1.0f + GameHolder.getInstance().mRadialAdjust);
         if (mTicks >= HeartBeatParameters.getMaxRadius()) {
             mTicks = 0;
         }

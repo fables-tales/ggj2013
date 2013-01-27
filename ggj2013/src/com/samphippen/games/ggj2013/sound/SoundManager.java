@@ -5,6 +5,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.samphippen.games.ggj2013.GameServices;
 
@@ -14,6 +15,9 @@ public class SoundManager {
     private final Sound mHeartBeat;
     private final Sound mThunk;
     private final Sound mScreech;
+    private final Music mPanting;
+    private float mPantingTarget = 0.0f;
+    private float mPantingLevel = 0.0f;
     private long mHeartBeatInstance = 0;
     private long mLastThunkTick = 0;
     private long mLastScreechTick = 0;
@@ -48,9 +52,18 @@ public class SoundManager {
         mThunk = Gdx.audio.newSound(Gdx.files.internal("bin/data/thunk.wav"));
         mScreech = Gdx.audio.newSound(Gdx.files
                 .internal("bin/data/enemy-tmp.wav"));
+        mPanting = Gdx.audio.newMusic(Gdx.files
+                .internal("bin/data/panting.wav"));
+        mPanting.setLooping(true);
+        mPanting.play();
+        mPanting.setVolume(0);
     }
 
     public void update() {
+        final float UPDATE_SPEED = 0.93f;
+        mPantingLevel = mPantingLevel * UPDATE_SPEED + mPantingTarget
+                * (1.0f - UPDATE_SPEED);
+        mPanting.setVolume(mPantingLevel);
     }
 
     public void beatHeart() {
@@ -92,5 +105,9 @@ public class SoundManager {
             mLastScreechTick = currentTick;
             mScreech.play();
         }
+    }
+
+    public void setPantingTarget(float level) {
+        mPantingTarget = level;
     }
 }

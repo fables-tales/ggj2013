@@ -6,16 +6,17 @@ import com.badlogic.gdx.math.Vector2;
 
 public class OrangeBlob implements GameObject {
 
-    private Sprite mSprite;
-    private boolean mShow;
+    private final Sprite mSprite;
 
     public OrangeBlob() {
         mSprite = GameServices.loadSprite("orange_blob.png");
         mSprite.setColor(1, 1, 1, mCurrentAlpha);
     }
 
-    private static final float ALPHA_STOP_HIGH = Constants.getFloat("blob_alpha_high");
-    private static final float ALPHA_STOP_SMALL = Constants.getFloat("blob_alpha_low");
+    private static final float ALPHA_STOP_HIGH = Constants
+            .getFloat("blob_alpha_high");
+    private static final float ALPHA_STOP_SMALL = Constants
+            .getFloat("blob_alpha_low");
     private float mCurrentAlpha = ALPHA_STOP_HIGH;
 
     private boolean mFadeOut = true;
@@ -26,7 +27,7 @@ public class OrangeBlob implements GameObject {
     @Override
     public void update() {
         Vector2 pos = GameHolder.getInstance().getFirstOnFire();
-        System.out.println(mCurrentAlpha);        
+        System.out.println(mCurrentAlpha);
         if (mCurrentAlpha > ALPHA_STOP_SMALL && mFadeOut) {
             mCurrentAlpha *= Constants.getFloat("blob_alpha_fade_out");
         } else if (mFadeOut) {
@@ -34,7 +35,7 @@ public class OrangeBlob implements GameObject {
         }
         if (pos != null) {
             Vector2 delta = pos.sub(PlayerObject.getInstance().getPosition());
-            
+
             if (Math.abs(delta.x) > 400 || Math.abs(delta.y) > 300) {
                 mFadeOut = false;
                 if (mCurrentAlpha < ALPHA_STOP_HIGH) {
@@ -70,10 +71,10 @@ public class OrangeBlob implements GameObject {
                             - mSprite.getHeight() / 2.0f);
                 }
 
-                if (delta.angle() > 315 && (delta.angle() + 360) < 315 + 90) {
+                if (delta.angle() > 315 && delta.angle() + 360 < 315 + 90) {
                     mSprite.setScale(mScaleB, mScaleA);
                     float x = 400;
-                    float along = (delta.angle() - 315);
+                    float along = delta.angle() - 315;
                     if (along < 0) {
                         along += 360;
                     }

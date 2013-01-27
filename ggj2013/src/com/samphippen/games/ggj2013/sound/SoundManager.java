@@ -63,7 +63,6 @@ public class SoundManager {
         final float UPDATE_SPEED = 0.93f;
         mPantingLevel = mPantingLevel * UPDATE_SPEED + mPantingTarget
                 * (1.0f - UPDATE_SPEED);
-        System.err.println(mPantingLevel);
         mPanting.setVolume(mPantingLevel);
     }
 

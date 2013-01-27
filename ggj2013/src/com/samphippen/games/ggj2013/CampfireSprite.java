@@ -21,7 +21,7 @@ public class CampfireSprite implements GameObject {
     private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -46.0f);
 
     private final Light mLight;
-    
+
     private Sprite mLastSprite;
 
     public CampfireSprite(Light light) {
@@ -94,22 +94,26 @@ public class CampfireSprite implements GameObject {
     public void emitRenderables(RenderQueueProxy renderQueue) {
         int zOrder = (int) mPosition.y + 10;
         if (mUserLastSprite) {
-            mLastSprite.setPosition(mPosition.x, mPosition.y);
-            renderQueue.add(new SpriteRenderable(mLastSprite), zOrder);
-        }
-        Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
 
-        if (mOn) {
-            mOnSprite.setPosition(drawPosition.x, drawPosition.y);
-            renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);
+            mLastSprite.setPosition(mPosition.x - mLastSprite.getWidth() / 2,
+                    mPosition.y - mLastSprite.getHeight() / 2);
+            renderQueue.add(new SpriteRenderable(mLastSprite), zOrder);
         } else {
-            if (mTransitionFrame >= mTransitionSprites.size()) {
-                mOffSprite.setPosition(drawPosition.x, drawPosition.y + 5.0f);
-                renderQueue.add(new SpriteRenderable(mOffSprite), zOrder);
+            Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
+
+            if (mOn) {
+                mOnSprite.setPosition(drawPosition.x, drawPosition.y);
+                renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);
             } else {
-                Sprite newSprite = mTransitionSprites.get(mTransitionFrame);
-                newSprite.setPosition(drawPosition.x, drawPosition.y);
-                renderQueue.add(new SpriteRenderable(newSprite), zOrder);
+                if (mTransitionFrame >= mTransitionSprites.size()) {
+                    mOffSprite.setPosition(drawPosition.x,
+                            drawPosition.y + 5.0f);
+                    renderQueue.add(new SpriteRenderable(mOffSprite), zOrder);
+                } else {
+                    Sprite newSprite = mTransitionSprites.get(mTransitionFrame);
+                    newSprite.setPosition(drawPosition.x, drawPosition.y);
+                    renderQueue.add(new SpriteRenderable(newSprite), zOrder);
+                }
             }
         }
     }

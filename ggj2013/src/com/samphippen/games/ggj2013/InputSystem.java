@@ -20,6 +20,10 @@ public class InputSystem {
         return sInstance;
     }
 
+    public static Vector2 disable(){
+        return new Vector2(0, 0);
+    }
+    
     public static Vector2 mouseSpeedVector() {
         float x = Gdx.input.getX() * 1.0f / (GameServices.WIDTH / 2) - 1;
         float y = 1.0f - Gdx.input.getY() * 1.0f / (GameServices.HEIGHT / 2);

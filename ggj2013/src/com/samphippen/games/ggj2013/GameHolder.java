@@ -61,6 +61,7 @@ public class GameHolder implements ApplicationListener {
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
+	private int loseCounter = 0;
 
     public LightManager getLightManager() {
         return mLightManager;
@@ -324,10 +325,22 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void drawLose() {
+    	InputSystem.disable();
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        mLoseSprite.setPosition(-400, -300);
-        mLoseSprite.draw(mSpecialBatch);
+        loseCounter ++;
+//        mShader.setUniform1fv(
+//                "radial_a",
+//                new float[] { (float) (1 * Constants.sConstants
+//                        .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
+//                0, 1);
+        if(loseCounter > 60 && loseCounter <= 120){
+            GameHolder.getInstance().redPulse();        	
+        }
+        if(loseCounter > 120){
+	        mLoseSprite.setPosition(-400, -300);
+	        mLoseSprite.draw(mSpecialBatch);
+        }
         mSpecialBatch.end();
     }
 

@@ -9,7 +9,7 @@ public class ObstaclesFactory {
     private final Quadtree<GameObject> mWorldQuad;
     private final ContinuousPathFinder mCpf;
 
-    private final float OBSTACLE_FIELD_SIZE = 3500.0f;
+    private final float OBSTACLE_FIELD_SIZE = 7000.0f;
     private final float safeZoneSize = Constants.getFloat("safe_zone_size");
 
     public ObstaclesFactory(Quadtree<GameObject> worldQuad,

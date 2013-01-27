@@ -44,6 +44,8 @@ public class GameHolder implements ApplicationListener {
     private OrangeBlob mOb;
     private Sprite mWinSprite;
     private ChaserObject mChaser;
+    private Sprite mTitle1Sprite;
+    private Sprite mTitle2Sprite;
     private boolean mDrawLose = false;
     private Sprite mLoseSprite;
     private float mPulseR = 1.0f;
@@ -230,7 +232,8 @@ public class GameHolder implements ApplicationListener {
         obstaclesFactory.makeObstacles();
 
         mOb = new OrangeBlob();
-
+        mTitle1Sprite = GameServices.loadSprite("title_1.png");
+        mTitle2Sprite = GameServices.loadSprite("title_2.png");
         mFog = new SmokeObject();
         // Distance to winning point destination
         double endPointMinDistance = Constants.sConstants
@@ -290,7 +293,9 @@ public class GameHolder implements ApplicationListener {
 
     @Override
     public void render() {
-        if (!mDrawWin && !mDrawLose && !mSplash) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        if (!mDrawWin && !mDrawLose) {
             update();
             draw();
         } else if (mDrawWin) {
@@ -312,15 +317,12 @@ public class GameHolder implements ApplicationListener {
         return null;
     }
 
+    private int mSplashState = 0;
+    private float mTitle1Alpha = 0;
+    private float mTitle2Alpha = 0;
+
     private void drawSplash() {
-        mSpecialBatch.begin();
-        mSplashSprite.setPosition(0, 0);
-        mSplashSprite.draw(mSpecialBatch);
-        mSpecialBatch.end();
-        if (Gdx.input.isKeyPressed(Keys.ENTER)) {
-            mSplash = false;
-            mSoundManager.beatHeart();
-        }
+
     }
 
     private void drawLose() {
@@ -391,8 +393,6 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void draw() {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         mBatch.setProjectionMatrix(mCamera.combined);
         mBatch.setShader(mShader);
@@ -420,12 +420,81 @@ public class GameHolder implements ApplicationListener {
          * for (CampfireSprite s : mPathSprites) { s.draw(mPathBatch); }
          * mPathBatch.end();
          */
+        if (!mSplash) {
+            mSpecialBatch.setProjectionMatrix(mCamera.combined);
+            mSpecialBatch.begin();
+            mMouse.draw(mSpecialBatch);
+            mOb.draw(mSpecialBatch);
+            mSpecialBatch.end();
+        } else {
+            if (mSplashState == 0) {
+                if (mTitle1Alpha < 1) {
+                    mTitle1Alpha += 0.05f;
+                } else {
+                    mTitle1Alpha = 1;
+                    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                        mSplashState = 1;
+                    }
+                }
+            }
 
-        mSpecialBatch.setProjectionMatrix(mCamera.combined);
-        mSpecialBatch.begin();
-        mMouse.draw(mSpecialBatch);
-        mOb.draw(mSpecialBatch);
-        mSpecialBatch.end();
+            if (mSplashState == 1) {
+                if (mTitle1Alpha > 0) {
+                    mTitle1Alpha -= 0.05f;
+                } else {
+                    mTitle1Alpha = 0;
+                    mSplashState = 2;
+                }
+            }
+
+            if (mSplashState == 2) {
+                if (mTitle2Alpha < 1) {
+                    mTitle2Alpha += 0.05f;
+                } else {
+                    mTitle2Alpha = 1;
+                    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                        mSplashState = 3;
+                    }
+                }
+            }
+
+            if (mSplashState == 3) {
+                if (mTitle2Alpha > 0) {
+                    mTitle2Alpha -= 0.05f;
+                } else {
+                    mTitle2Alpha = 0;
+                    mSplash = false;
+                    mSoundManager.beatHeart();
+                }
+            }
+            mSpecialBatch.begin();
+            if (mTitle1Alpha < 0) {
+                mTitle1Alpha = 0;
+            }
+
+            if (mTitle1Alpha > 1) {
+                mTitle1Alpha = 1;
+            }
+
+            if (mTitle2Alpha < 0) {
+                mTitle2Alpha = 0;
+            }
+
+            if (mTitle2Alpha > 1) {
+                mTitle2Alpha = 1;
+            }
+
+            System.out.println("a1" + mTitle1Alpha);
+            System.out.println("a2" + mTitle2Alpha);
+            mTitle1Sprite.setColor(1, 1, 1, mTitle1Alpha);
+            mTitle2Sprite.setColor(1, 1, 1, mTitle2Alpha);
+            mTitle1Sprite.setPosition(0, 0);
+            mTitle2Sprite.setPosition(0, 0);
+            mTitle1Sprite.draw(mSpecialBatch);
+            mTitle2Sprite.draw(mSpecialBatch);
+            mSpecialBatch.end();
+
+        }
 
     }
 
@@ -488,6 +557,7 @@ public class GameHolder implements ApplicationListener {
             mShader.setUniform1fv("localLightIntensity" + lightIndex,
                     new float[] { 0.0f }, 0, 1);
         }
+
     }
 
     private Vector2 getCameraOrigin() {

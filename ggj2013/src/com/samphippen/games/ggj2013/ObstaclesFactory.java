@@ -23,7 +23,8 @@ public class ObstaclesFactory {
         float density = Constants.getFloat("obstacle_density");
         for (int i = 0; i < (int) (density * OBSTACLE_FIELD_SIZE * OBSTACLE_FIELD_SIZE); i++) {
             Vector2 obstaclePosition = new Vector2();
-            while (obstaclePosition.len() < safeZoneSize) {
+            // trees don't spawn in safezone
+            while (obstaclePosition.len() < safeZoneSize + 100) {
                 obstaclePosition.set(GameServices.sRng.nextFloat()
                         * OBSTACLE_FIELD_SIZE - 0.5f * OBSTACLE_FIELD_SIZE,
                         GameServices.sRng.nextFloat() * OBSTACLE_FIELD_SIZE

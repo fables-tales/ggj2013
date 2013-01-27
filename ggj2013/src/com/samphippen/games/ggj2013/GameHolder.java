@@ -384,7 +384,7 @@ public class GameHolder implements ApplicationListener {
         mBlackSprite.draw(mSpecialBatch);
         mLoseSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
-        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+        if (Gdx.input.isKeyPressed(Keys.SPACE)) {
             // System.exit(1);
             create();
         }
@@ -396,7 +396,7 @@ public class GameHolder implements ApplicationListener {
         mWinSprite.setPosition(-400, -300);
         mWinSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
-        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+        if (Gdx.input.isKeyPressed(Keys.SPACE)) {
             // System.exit(1);
             create();
         }

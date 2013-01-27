@@ -24,7 +24,7 @@ public class ChaserObject implements GameObject {
             Vector2 playerPosition = player.getPosition();
 
             Vector2 delta = new Vector2(playerPosition).sub(mPosition);
-            if (delta.len() > 200) {
+            if (delta.len() > Constants.getFloat("chaser_light_distance")) {
                 mOutOfLight++;
             } else if (GameServices.getTicks() % 1 == 0) {
                 mPosition.add(delta.mul((float) (1.0f * Constants.sConstants

@@ -11,6 +11,7 @@ radial_lighting_a 14000.0
 radial_lighting_b 3000.0
 chaser_heart_attack_distance_trigger 100
 chaser_speed 0.01
+chaser_light_distance 200
 chaser_reappear_delay 2
 chaser_reappear_extra_random_delay 4
 waypoint_spacing 200

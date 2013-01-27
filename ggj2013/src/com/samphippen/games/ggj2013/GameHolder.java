@@ -117,6 +117,7 @@ public class GameHolder implements ApplicationListener {
         mWorldObjects.clear();
         mToRender.clear();
         mPathSprites.clear();
+        mSoundManager.killThings();
     }
 
     @Override

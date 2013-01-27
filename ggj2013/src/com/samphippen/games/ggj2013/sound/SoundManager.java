@@ -115,4 +115,9 @@ public class SoundManager {
     public void setPantingTarget(float level) {
         mPantingTarget = level;
     }
+
+    public void killThings() {
+        mPanting.stop();
+        mWind.stop();
+    }
 }

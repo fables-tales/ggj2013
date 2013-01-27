@@ -43,10 +43,12 @@ public class SmokeObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        Sprite s = mSprites.get(mCurrentSprite);
-        s.setPosition(mTransform.x, mTransform.y);
-        s.setColor(1, 1, 1, 0.7f);
-        renderQueue.add(new SpriteRenderable(s), Constants.QUITE_A_LOT);
+        if (Constants.getFloat("fog_on") > 0.5) {
+            Sprite s = mSprites.get(mCurrentSprite);
+            s.setPosition(mTransform.x, mTransform.y);
+            s.setColor(1, 1, 1, 0.7f);
+            renderQueue.add(new SpriteRenderable(s), Constants.QUITE_A_LOT);
+        }
     }
 
 }

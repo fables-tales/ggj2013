@@ -1,6 +1,7 @@
 package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -38,6 +39,10 @@ public class GameHolder implements ApplicationListener {
     private ShaderProgram mShader;
     private final List<CampfireSprite> mPathSprites = new ArrayList<CampfireSprite>();
 
+    public List<CampfireSprite> getPathSprites() {
+        return Collections.unmodifiableList(mPathSprites);
+    }
+
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;
     private boolean mDrawWin = false;
@@ -56,7 +61,7 @@ public class GameHolder implements ApplicationListener {
     private long mLastAmplificationTick = 0;
 
     private static final int NLIGHTS = 8;
-    private final LightManager mLightManager = new LightManager();
+    private LightManager mLightManager;
     private int mGuardFrames;
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
@@ -97,10 +102,25 @@ public class GameHolder implements ApplicationListener {
         return eyes;
     }
 
+    private void destroySomeBees() {
+        InputSystem.reset();
+        PlayerObject.reset();
+        mDrawLose = false;
+        mDrawWin = false;
+        mSplash = true;
+        mWorldObjects.clear();
+        mToRender.clear();
+        mPathSprites.clear();
+    }
+
     @Override
     public void create() {
-        assert sSharedInstance == null : "duplicate GameHolder";
+        if (sSharedInstance != null) {
+            assert sSharedInstance == this : "duplicate GameHolder";
+            destroySomeBees();
+        }
         sSharedInstance = this;
+        mLightManager = new LightManager();
         float nativeGamma = 2.4f;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             nativeGamma = 1.8f;
@@ -176,7 +196,7 @@ public class GameHolder implements ApplicationListener {
                 + "  }"
                 + createLocalLightLightnessModifier()
                 // TODO change to 0.1
-                //+ " if (lightness < 1.0) lightness = 1.0;"
+                // + " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.0) lightness = 0.0;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
@@ -221,7 +241,7 @@ public class GameHolder implements ApplicationListener {
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
         mWorldObjects.add(mChaser);
-        
+
         // Add obstacles to the world
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
@@ -229,7 +249,7 @@ public class GameHolder implements ApplicationListener {
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
-        
+
         mOb = new OrangeBlob();
 
         mFog = new SmokeObject();
@@ -272,7 +292,7 @@ public class GameHolder implements ApplicationListener {
                 prev = v;
             }
         }
-        
+
         // Make tree ring for starting position
         obstaclesFactory.makeTreeRing(mPathSprites.get(0).mPosition.angle());
 
@@ -303,7 +323,7 @@ public class GameHolder implements ApplicationListener {
         }
 
     }
-    
+
     public Vector2 getFirstOnFire() {
         for (CampfireSprite cs : mPathSprites) {
             if (cs.getOn()) {
@@ -342,6 +362,10 @@ public class GameHolder implements ApplicationListener {
 	        mLoseSprite.draw(mSpecialBatch);
         }
         mSpecialBatch.end();
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+            // System.exit(1);
+            create();
+        }
     }
 
     private void drawWin() {
@@ -350,13 +374,15 @@ public class GameHolder implements ApplicationListener {
         mWinSprite.setPosition(-400, -300);
         mWinSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+            // System.exit(1);
+            create();
+        }
     }
 
     private void update() {
+        mSoundManager.update();
         mRadialAdjust *= 0.98f;
-        if (mRadialAdjust > 0.01f) {
-            System.out.printf("RA = %f\n", mRadialAdjust);
-        }
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             System.exit(1);
         }
@@ -370,7 +396,7 @@ public class GameHolder implements ApplicationListener {
          */
 
         mMouse.update();
-        
+
         mOb.update();
 
         GameServices.advanceTicks();
@@ -444,8 +470,6 @@ public class GameHolder implements ApplicationListener {
         if (mPlayer.HeartBeatParameters.chaserPulseCount == 0
                 && mPlayer.HeartBeatParameters.isFastHeartbeat()
                 && mWhitePulseCalled) {
-
-            System.out.println("sup");
             glowRadius *= Constants.getFloat("big_pulse_amp");
             maxGlowRadius *= Constants.getFloat("big_pulse_amp");
         }
@@ -539,7 +563,6 @@ public class GameHolder implements ApplicationListener {
         mPulseR = 1f;
         mWhitePulseCalled = true;
         if (mPulseG < 1.0) {
-            System.out.println(mPulseG);
             mPulseG += Constants.getFloat("red_decay_rate");
         } else {
             mPulseG = 1.0f;

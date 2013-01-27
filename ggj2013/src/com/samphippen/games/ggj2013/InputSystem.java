@@ -8,9 +8,17 @@ public class InputSystem {
     private static InputSystem sInstance = null;
 
     private static float mSpeed = 1.0f;
+    private static int mRunTime = 0;
+    private static boolean mExhausted = false;
 
     private static final float DEAD_ZONE_SIZE = (float) (1.0f * Constants.sConstants
             .get("dead_zone_size"));
+
+    public static void reset() {
+        mSpeed = 1.0f;
+        mRunTime = 0;
+        mExhausted = false;
+    }
 
     public static InputSystem getInstance() {
         if (sInstance == null) {
@@ -47,27 +55,52 @@ public class InputSystem {
         if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W)) {
             result.set(result.x, 1.0f);
         }
-        
+
         if (Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) {
             result.set(result.x, -1.0f);
         }
-        
+
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
             result.set(-1.0f, result.y);
         }
-        
-        if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
+
+        if (Gdx.input.isKeyPressed(Keys.RIGHT)
+                || Gdx.input.isKeyPressed(Keys.D)) {
             result.set(1.0f, result.y);
         }
 
-        if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)
+        float targetSpeed;
+        if (mExhausted) {
+            if (GameServices.getTicks() % 2 == 1) {
+                --mRunTime;
+            }
+            if (mRunTime == 0) {
+                mExhausted = false;
+            }
+            GameHolder.getInstance().getSoundManager().setPantingTarget(0.4f);
+            targetSpeed = Constants.getFloat("player_exhausted_speed");
+            ;
+        } else if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)
                 || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT)) {
+            ++mRunTime;
+            if (mRunTime > Constants.getInt("exhausted_run_time")) {
+                mExhausted = true;
+                System.err.println("exhausted");
+            }
             PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
-            return result.nor().mul(Constants.getFloat("player_sprint_speed")*mSpeed);
+            GameHolder.getInstance().getSoundManager().setPantingTarget(1.0f);
+            targetSpeed = Constants.getFloat("player_sprint_speed");
         } else {
-            return result.nor().mul(Constants.getFloat("player_speed")*mSpeed);
+            if (mRunTime > 0) {
+                --mRunTime;
+            }
+            GameHolder.getInstance().getSoundManager().setPantingTarget(0.0f);
+            targetSpeed = Constants.getFloat("player_speed");
         }
-
+        float speedSmoothness = Constants.getFloat("speed_smoothness");
+        mSpeed = speedSmoothness * mSpeed + (1.0f - speedSmoothness)
+                * targetSpeed;
+        return result.nor().mul(mSpeed);
     }
 
     public void setSlow() {

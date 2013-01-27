@@ -31,4 +31,8 @@ public class Constants {
     public static float getFloat(String key) {
         return (float) getDouble(key);
     }
+
+    public static int getInt(String key) {
+        return (int) getDouble(key);
+    }
 }

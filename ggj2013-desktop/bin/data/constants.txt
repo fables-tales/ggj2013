@@ -27,3 +27,8 @@ tree_slow_speed 0.9
 big_pulse_amp 10
 die_radius 30
 chaser_light_distance 200
+chaser_highlight_inner_radius 100
+chaser_highlight_outer_radius 120
+chaser_highlight_start_intensity 1
+chaser_highlight_decay_rate 0.94
+chaser_highlight_freeze_ticks 40

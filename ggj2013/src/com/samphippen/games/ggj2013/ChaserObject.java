@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public class ChaserObject implements GameObject {
 
     private final Sprite mSprite;
+    private final Sprite mRevealSprite;
 
     private Vector2 mPosition;
     private int mHighlightFreeze = 0;
@@ -17,6 +18,7 @@ public class ChaserObject implements GameObject {
 
     public ChaserObject() {
         mSprite = GameServices.loadSprite("enemy.png");
+        mRevealSprite = GameServices.loadSprite("enemy_reveal.png");
         mSprite.setColor(3.0f, 0.1f, 0.1f, 1.0f);
         mPosition = new Vector2(3000, 3000);
     }
@@ -26,8 +28,8 @@ public class ChaserObject implements GameObject {
             GameHolder.getInstance().getLightManager().disposeLight(mHighlight);
         }
         Vector2 highlightPosition = mPosition.cpy().add(
-                new Vector2(mSprite.getWidth() / 2.0f,
-                        mSprite.getHeight() / 2.0f));
+                new Vector2(mRevealSprite.getWidth() / 2.0f, mRevealSprite
+                        .getHeight() / 2.0f));
         mHighlight = GameHolder.getInstance().getLightManager()
                 .createLight(highlightPosition);
         mHighlight.setInnerRadius(100.0f);
@@ -39,7 +41,7 @@ public class ChaserObject implements GameObject {
     @Override
     public void update() {
         if (mHighlight != null) {
-            final float HIGHLIGHT_DECAY_RATE = 0.98f;
+            final float HIGHLIGHT_DECAY_RATE = 0.94f;
             mHighlight.setIntensity(mHighlight.getIntensity()
                     * HIGHLIGHT_DECAY_RATE);
             if (mHighlight.getIntensity() < 0.05f) {
@@ -104,12 +106,17 @@ public class ChaserObject implements GameObject {
 
         }
         mSprite.setPosition(mPosition.x, mPosition.y);
-
+        mRevealSprite.setPosition(mPosition.x, mPosition.y);
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        renderQueue.add(new SpriteRenderable(mSprite), (int) mPosition.y);
+        if (mHighlightFreeze > 0) {
+            renderQueue.add(new SpriteRenderable(mRevealSprite),
+                    -Constants.QUITE_A_LOT);
+        } else {
+            renderQueue.add(new SpriteRenderable(mSprite), (int) mPosition.y);
+        }
     }
 
     public Vector2 getPosition() {

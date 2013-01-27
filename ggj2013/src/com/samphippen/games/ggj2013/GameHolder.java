@@ -416,6 +416,7 @@ public class GameHolder implements ApplicationListener {
             mDrawLose = true;
         }
 
+        System.out.println(InputSystem.mouseSpeedVector());
         Vector2 mouseSpeed = InputSystem.mouseSpeedVector();
         float totalSpeed = mouseSpeed.len();
         int stepTime = 1; // prevents usage
@@ -461,7 +462,9 @@ public class GameHolder implements ApplicationListener {
             mMouse.draw(mSpecialBatch);
             mOb.draw(mSpecialBatch);
             mSpecialBatch.end();
+            InputSystem.enable();
         } else {
+            InputSystem.disable();
             if (mSplashState == 0) {
                 if (mTitle1Alpha < 1) {
                     mTitle1Alpha += 0.05f;

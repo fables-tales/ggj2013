@@ -1,5 +1,7 @@
 package com.samphippen.games.ggj2013;
 
+import java.awt.Menu;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -28,10 +30,16 @@ public class InputSystem {
         return sInstance;
     }
 
-    public static Vector2 disable(){
-        return new Vector2(0, 0);
+    private static boolean mEnabled = false;
+
+    public static void enable() {
+        mEnabled = true;
     }
-    
+
+    public static void disable() {
+        mEnabled = false;
+    }
+
     public static Vector2 mouseSpeedVector() {
         float x = Gdx.input.getX() * 1.0f / (GameServices.WIDTH / 2) - 1;
         float y = 1.0f - Gdx.input.getY() * 1.0f / (GameServices.HEIGHT / 2);
@@ -100,7 +108,11 @@ public class InputSystem {
         float speedSmoothness = Constants.getFloat("speed_smoothness");
         mSpeed = speedSmoothness * mSpeed + (1.0f - speedSmoothness)
                 * targetSpeed;
-        return result.nor().mul(mSpeed);
+        if (mEnabled) {
+            return result.nor().mul(mSpeed);
+        } else {
+            return new Vector2(0,0);
+        }
     }
 
     public void setSlow() {

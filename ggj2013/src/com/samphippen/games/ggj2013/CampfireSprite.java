@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.jmx.remote.util.Service;
 
 public class CampfireSprite implements GameObject {
 
@@ -21,6 +22,8 @@ public class CampfireSprite implements GameObject {
 
     private final Light mLight;
 
+    private Sprite mLastSprite;
+
     public CampfireSprite(Light light) {
         mLight = light;
         mLight.setInnerRadius(10.0f);
@@ -29,10 +32,17 @@ public class CampfireSprite implements GameObject {
         loadFrames(mOnSprites, 0, 24, "campfire_large_", ".png");
         loadFrames(mTransitionSprites, 30, 59, "campfire_transition_", ".png");
         mOffSprite = GameServices.loadSprite("campfire-off.png");
+        mLastSprite = GameServices.loadSprite("exit.png");
     }
-    
+
     public boolean getOn() {
         return mOn;
+    }
+
+    private boolean mUserLastSprite = false;
+
+    public void setLast() {
+        mUserLastSprite = true;
     }
 
     public void loadFrames(List<Sprite> out, int start, int end, String prefix,
@@ -82,19 +92,28 @@ public class CampfireSprite implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
-        Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
         int zOrder = (int) mPosition.y + 10;
-        if (mOn) {
-            mOnSprite.setPosition(drawPosition.x, drawPosition.y);
-            renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);
+        if (mUserLastSprite) {
+
+            mLastSprite.setPosition(mPosition.x - mLastSprite.getWidth() / 2,
+                    mPosition.y - mLastSprite.getHeight() / 2);
+            renderQueue.add(new SpriteRenderable(mLastSprite), zOrder);
         } else {
-            if (mTransitionFrame >= mTransitionSprites.size()) {
-                mOffSprite.setPosition(drawPosition.x, drawPosition.y + 5.0f);
-                renderQueue.add(new SpriteRenderable(mOffSprite), zOrder);
+            Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
+
+            if (mOn) {
+                mOnSprite.setPosition(drawPosition.x, drawPosition.y);
+                renderQueue.add(new SpriteRenderable(mOnSprite), zOrder);
             } else {
-                Sprite newSprite = mTransitionSprites.get(mTransitionFrame);
-                newSprite.setPosition(drawPosition.x, drawPosition.y);
-                renderQueue.add(new SpriteRenderable(newSprite), zOrder);
+                if (mTransitionFrame >= mTransitionSprites.size()) {
+                    mOffSprite.setPosition(drawPosition.x,
+                            drawPosition.y + 5.0f);
+                    renderQueue.add(new SpriteRenderable(mOffSprite), zOrder);
+                } else {
+                    Sprite newSprite = mTransitionSprites.get(mTransitionFrame);
+                    newSprite.setPosition(drawPosition.x, drawPosition.y);
+                    renderQueue.add(new SpriteRenderable(newSprite), zOrder);
+                }
             }
         }
     }

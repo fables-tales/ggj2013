@@ -1,21 +1,20 @@
 package com.samphippen.games.ggj2013;
 
-import java.util.List;
-
 import com.badlogic.gdx.math.Vector2;
 import com.samphippen.games.ggj2013.pathfind.ContinuousPathFinder;
+import com.samphippen.games.ggj2013.quadtree.Quadtree;
 
 public class ObstaclesFactory {
 
-    private final List<GameObject> mWorldObjects;
+    private final Quadtree<GameObject> mWorldQuad;
     private final ContinuousPathFinder mCpf;
 
     private final float OBSTACLE_FIELD_SIZE = 3500.0f;
     private final float safeZoneSize = Constants.getFloat("safe_zone_size");
 
-    public ObstaclesFactory(List<GameObject> worldObjects,
+    public ObstaclesFactory(Quadtree<GameObject> worldQuad,
             ContinuousPathFinder cpf) {
-        mWorldObjects = worldObjects;
+        mWorldQuad = worldQuad;
         mCpf = cpf;
     }
 
@@ -32,7 +31,7 @@ public class ObstaclesFactory {
             }
             ObstacleObject obstacle = new ObstacleObject(obstaclePosition);
 
-            mWorldObjects.add(obstacle);
+            mWorldQuad.insert(obstaclePosition, obstacle);
             mCpf.addObstacle(GameServices.toPathFinder(obstaclePosition),
                     Constants.getFloat("obstacle_width") * 2);
         }
@@ -51,7 +50,7 @@ public class ObstaclesFactory {
             float y = safeZoneSize * (float) Math.sin(radAngle);
             obstaclePosition.set(x - spriteWidth / 2, y - spriteHeight / 2);
             ObstacleObject obstacle = new ObstacleObject(obstaclePosition);
-            mWorldObjects.add(obstacle);
+            mWorldQuad.insert(obstaclePosition, obstacle);
         }
     }
 

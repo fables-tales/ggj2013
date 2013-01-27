@@ -12,7 +12,7 @@ public class BackgroundObject implements GameObject {
     private static int K = 1000;
 
     public BackgroundObject() {
-        Sprite sprite = GameServices.makeRepeatSprite("dat-background.png",
+        Sprite sprite = GameServices.makeRepeatSprite("big.png",
                 256 * K, 256 * K);
         sprite.setPosition(-256 * K/2, -256 * K/2);
 

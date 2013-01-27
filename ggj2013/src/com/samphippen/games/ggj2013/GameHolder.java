@@ -51,6 +51,7 @@ public class GameHolder implements ApplicationListener {
     private ChaserObject mChaser;
     private Sprite mTitle1Sprite;
     private Sprite mTitle2Sprite;
+    private Sprite mBlackSprite;
     private boolean mDrawLose = false;
     private Sprite mLoseSprite;
     private float mPulseR = 1.0f;
@@ -68,7 +69,7 @@ public class GameHolder implements ApplicationListener {
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
-	private int loseCounter = 0;
+    private int loseCounter = 0;
 
     public LightManager getLightManager() {
         return mLightManager;
@@ -127,6 +128,7 @@ public class GameHolder implements ApplicationListener {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             nativeGamma = 1.8f;
         }
+        mBlackSprite = GameServices.loadSprite("black.png");
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //
@@ -346,23 +348,40 @@ public class GameHolder implements ApplicationListener {
 
     }
 
+    private float mEndAlpha = 0;
+    private float mBlackAlpha = 0;
+
     private void drawLose() {
-    	InputSystem.disable();
+        System.out.println("gameover!");
+        InputSystem.disable();
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        loseCounter ++;
-//        mShader.setUniform1fv(
-//                "radial_a",
-//                new float[] { (float) (1 * Constants.sConstants
-//                        .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
-//                0, 1);
-        if(loseCounter > 60 && loseCounter <= 120){
-            GameHolder.getInstance().redPulse();        	
+        loseCounter++;
+
+        if (loseCounter > 0 && loseCounter <= 120) {
+            if (mBlackAlpha < 1) {
+                mBlackAlpha += 0.01f;
+            } else {
+                mBlackAlpha = 1;
+            }
+            
+            mBlackSprite.setPosition(-400, -300);
+            mBlackSprite.setColor(1, 1, 1, mBlackAlpha);
+            mLoseSprite.setColor(1,1,1,0);
+            mBlackSprite.draw(mSpecialBatch);
         }
-        if(loseCounter > 120){
-	        mLoseSprite.setPosition(-400, -300);
-	        mLoseSprite.draw(mSpecialBatch);
+        if (loseCounter > 110) {
+            if (mEndAlpha < 1) {
+                mEndAlpha += 0.05;
+            } else {
+                mEndAlpha = 1;
+            }
+            mLoseSprite.setPosition(-400, -300);
+            mLoseSprite.setColor(1, 1, 1, mEndAlpha);
+            
         }
+        mBlackSprite.draw(mSpecialBatch);
+        mLoseSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             // System.exit(1);
@@ -416,7 +435,7 @@ public class GameHolder implements ApplicationListener {
             mDrawLose = true;
         }
 
-        System.out.println(InputSystem.mouseSpeedVector());
+        
         Vector2 mouseSpeed = InputSystem.mouseSpeedVector();
         float totalSpeed = mouseSpeed.len();
         int stepTime = 1; // prevents usage
@@ -522,8 +541,7 @@ public class GameHolder implements ApplicationListener {
                 mTitle2Alpha = 1;
             }
 
-            System.out.println("a1" + mTitle1Alpha);
-            System.out.println("a2" + mTitle2Alpha);
+            
             mTitle1Sprite.setColor(1, 1, 1, mTitle1Alpha);
             mTitle2Sprite.setColor(1, 1, 1, mTitle2Alpha);
             mTitle1Sprite.setPosition(0, 0);

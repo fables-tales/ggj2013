@@ -20,7 +20,7 @@ public class ChaserObject implements GameObject {
         mSprite = GameServices.loadSprite("enemy.png");
         mRevealSprite = GameServices.loadSprite("enemy_reveal.png");
         mSprite.setColor(3.0f, 0.1f, 0.1f, 1.0f);
-        mPosition = new Vector2(3000, 3000);
+        mPosition = new Vector2(0, 0);
     }
 
     private void highlight() {

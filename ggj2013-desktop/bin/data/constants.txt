@@ -22,8 +22,9 @@ chaser_spawn_constant_spawn_radius 20
 end_point_distance_min 1000
 end_point_distance_max 1500
 heartbeat_speed_multiplier 2
-safe_zone_size 400
+safe_zone_size 200
 red_decay_rate 0.01
 tree_slow_speed 0.5
 big_pulse_amp 3
 die_radius 40
+number_of_trees_in_safezone_ring 13

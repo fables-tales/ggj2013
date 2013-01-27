@@ -11,6 +11,8 @@ public class ObstaclesFactory {
     private final ContinuousPathFinder mCpf;
 
     private final float OBSTACLE_FIELD_SIZE = 6000.0f;
+	private float safeZoneSize = Constants
+            .getFloat("safe_zone_size");
 
     public ObstaclesFactory(List<GameObject> worldObjects,
             ContinuousPathFinder cpf) {
@@ -22,8 +24,7 @@ public class ObstaclesFactory {
         float density = Constants.getFloat("obstacle_density");
         for (int i = 0; i < (int) (density * OBSTACLE_FIELD_SIZE * OBSTACLE_FIELD_SIZE); i++) {
             Vector2 obstaclePosition = new Vector2();
-            while (obstaclePosition.len() < Constants
-                    .getFloat("safe_zone_size")) {
+            while (obstaclePosition.len() < safeZoneSize ) {
                 obstaclePosition.set(GameServices.sRng.nextFloat()
                         * OBSTACLE_FIELD_SIZE - 0.5f * OBSTACLE_FIELD_SIZE,
                         GameServices.sRng.nextFloat() * OBSTACLE_FIELD_SIZE
@@ -36,5 +37,23 @@ public class ObstaclesFactory {
                     Constants.getFloat("obstacle_width"));
         }
     }
+    
+    public void makeTreeRing(float firstCampfireAngle){
+    	float spriteWidth = GameServices.loadSprite("tree.png").getWidth();
+    	float spriteHeight = GameServices.loadSprite("tree.png").getHeight();
+    	int treesInRing = (int) Constants.getFloat("number_of_trees_in_safezone_ring");
+    	for(int i = 0; i < treesInRing; i++){
+    		firstCampfireAngle += 360/(treesInRing+1);
+    		double radAngle = Math.toRadians(firstCampfireAngle % 360);
+            Vector2 obstaclePosition = new Vector2();
+            float x = safeZoneSize * (float) Math.cos(radAngle);
+            float y = safeZoneSize * (float) Math.sin(radAngle);
+            obstaclePosition.set(x - spriteWidth/2, y - spriteHeight/2);  
+            ObstacleObject obstacle = new ObstacleObject(obstaclePosition);
+            mWorldObjects.add(obstacle);		
+    	}
+    }
+    
+    
 
 }

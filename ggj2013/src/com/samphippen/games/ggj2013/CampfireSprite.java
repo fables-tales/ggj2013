@@ -16,7 +16,7 @@ public class CampfireSprite implements GameObject {
     private final List<Sprite> mOffSprites = new ArrayList<Sprite>();
 
     private boolean mOn = true;
-    private Vector2 mPosition;
+    public Vector2 mPosition;
     private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -64.0f);
 
     private final Light mLight;

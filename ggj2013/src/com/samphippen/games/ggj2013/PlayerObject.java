@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 public class PlayerObject implements GameObject {
 
     private static PlayerObject sInstance = null;
-    private Sprite mSprite = null;
     public float mHeartbeatRadius = (float) 1.0;
     private Vector2 mPrevPosition = new Vector2(0, 0);
     private Vector2 mPosition = new Vector2(0, 0);
@@ -17,9 +16,18 @@ public class PlayerObject implements GameObject {
 
     private final Double NUMPER_FAST_PULSES = Constants.sConstants
             .get("number_fast_pulses");
+    
+    private Sprite mCurrentSprite;
+    private Sprite mUpSprite;
+    private Sprite mDownSprite;
+    private Sprite mLeftSprite;
+    private Sprite mRightSprite;
 
     private PlayerObject() {
-        mSprite = GameServices.loadSprite("player.png");
+        mLeftSprite = GameServices.loadSprite("player_left.png");
+        mRightSprite = GameServices.loadSprite("player_right.png");
+        mUpSprite = GameServices.loadSprite("player_back.png");
+        mDownSprite = GameServices.loadSprite("player.png");
     }
 
     public static PlayerObject getInstance() {
@@ -34,7 +42,21 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
-        mSprite.setPosition(mPosition.x - 10, mPosition.y - 30);
+        Vector2 delta = new Vector2(mPosition).sub(mPrevPosition);
+        if (Math.abs(delta.y) > Math.abs(delta.x)) {
+            if (delta.y > 0) {
+                mCurrentSprite = mUpSprite;
+            } else {
+                mCurrentSprite = mDownSprite;
+            }
+        } else {
+            if (delta.x < 0) {
+                mCurrentSprite = mLeftSprite;
+            } else {
+                mCurrentSprite = mRightSprite;
+            }
+        }
+        mCurrentSprite.setPosition(mPosition.x - 10, mPosition.y - 30);
         mHeartbeatRadius = calculateHeartBeatRadius();
     }
 
@@ -78,7 +100,7 @@ public class PlayerObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
-        renderables.add(new SpriteRenderable(mSprite), (int) mPosition.y);
+        renderables.add(new SpriteRenderable(mCurrentSprite), (int) mPosition.y);
     }
 
 }

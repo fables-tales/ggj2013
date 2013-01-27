@@ -2,15 +2,14 @@ package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class SmokeObject implements GameObject {
 
-    private List<Sprite> mSprites = new ArrayList<Sprite>();
-    private Vector2 mTransform = new Vector2(0, 0);
+    private final List<Sprite> mSprites = new ArrayList<Sprite>();
+    private final Vector2 mTransform = new Vector2(0, 0);
     private int mCurrentSprite = 0;
 
     public SmokeObject() {
@@ -30,7 +29,7 @@ public class SmokeObject implements GameObject {
     public void setPosition(float x, float y) {
         mTransform.set(x, y);
     }
-    
+
     int k = 0;
 
     @Override
@@ -46,7 +45,7 @@ public class SmokeObject implements GameObject {
     public void emitRenderables(RenderQueueProxy renderQueue) {
         Sprite s = mSprites.get(mCurrentSprite);
         s.setPosition(mTransform.x, mTransform.y);
-        s.setColor(1,1,1,0.7f);
+        s.setColor(1, 1, 1, 0.7f);
         renderQueue.add(new SpriteRenderable(s), Constants.QUITE_A_LOT);
     }
 

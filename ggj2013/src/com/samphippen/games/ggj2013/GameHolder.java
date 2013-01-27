@@ -56,7 +56,7 @@ public class GameHolder implements ApplicationListener {
     private long mLastAmplificationTick = 0;
 
     private static final int NLIGHTS = 8;
-    private final LightManager mLightManager = new LightManager();
+    private LightManager mLightManager;
     private int mGuardFrames;
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
@@ -96,10 +96,25 @@ public class GameHolder implements ApplicationListener {
         return eyes;
     }
 
+    private void destroySomeBees() {
+        InputSystem.reset();
+        PlayerObject.reset();
+        mDrawLose = false;
+        mDrawWin = false;
+        mSplash = true;
+        mWorldObjects.clear();
+        mToRender.clear();
+        mPathSprites.clear();
+    }
+
     @Override
     public void create() {
-        assert sSharedInstance == null : "duplicate GameHolder";
+        if (sSharedInstance != null) {
+            assert sSharedInstance == this : "duplicate GameHolder";
+            destroySomeBees();
+        }
         sSharedInstance = this;
+        mLightManager = new LightManager();
         float nativeGamma = 2.4f;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             nativeGamma = 1.8f;
@@ -330,7 +345,8 @@ public class GameHolder implements ApplicationListener {
         mLoseSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            System.exit(1);
+            // System.exit(1);
+            create();
         }
     }
 
@@ -341,7 +357,8 @@ public class GameHolder implements ApplicationListener {
         mWinSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            System.exit(1);
+            // System.exit(1);
+            create();
         }
     }
 

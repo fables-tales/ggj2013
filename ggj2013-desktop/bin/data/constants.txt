@@ -15,7 +15,7 @@ chaser_reappear_delay 6
 chaser_reappear_extra_random_delay 10
 waypoint_spacing 500
 obstacle_width 40
-obstacle_density 0.0001
+obstacle_density 0.0000001
 chaser_spawn_random_radius 400
 chaser_spawn_constant_spawn_radius 100
 end_point_distance_min 3000
@@ -44,3 +44,4 @@ exhausted_run_time 300
 speed_smoothness 0.84
 campfire_safe_zone_size 100
 chaser_constant_speed 1
+tree_sprite_scale 1

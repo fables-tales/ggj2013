@@ -377,6 +377,7 @@ public class GameHolder implements ApplicationListener {
                 mEndAlpha = 1;
             }
             mLoseSprite.setPosition(-400, -300);
+            mBlackSprite.setColor(0,0,0,1);
             mLoseSprite.setColor(1, 1, 1, mEndAlpha);
             
         }

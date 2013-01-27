@@ -228,7 +228,7 @@ public class GameHolder implements ApplicationListener {
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
-        
+
         mOb = new OrangeBlob();
 
         mFog = new SmokeObject();
@@ -302,7 +302,7 @@ public class GameHolder implements ApplicationListener {
         }
 
     }
-    
+
     public Vector2 getFirstOnFire() {
         for (CampfireSprite cs : mPathSprites) {
             if (cs.getOn()) {
@@ -340,6 +340,7 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void update() {
+        mSoundManager.update();
         mRadialAdjust *= 0.98f;
         if (mRadialAdjust > 0.01f) {
             System.out.printf("RA = %f\n", mRadialAdjust);
@@ -357,7 +358,7 @@ public class GameHolder implements ApplicationListener {
          */
 
         mMouse.update();
-        
+
         mOb.update();
 
         GameServices.advanceTicks();

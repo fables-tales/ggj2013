@@ -246,21 +246,20 @@ public class GameHolder implements ApplicationListener {
         Vector2 prev = mPlayer.getPosition();
 
         for (Vector2 v : path) {
-            Sprite s = GameServices.loadSprite("campfire.png");
+            // Sprite s = GameServices.loadSprite("campfire.png");
             v = GameServices.fromPathFinder(v);
             if (new Vector2(prev).sub(v).len() > Constants.sConstants
                     .get("waypoint_spacing")) {
-                CampfireSprite cs = new CampfireSprite();
+                Light campfire = mLightManager.createLight(v);
+                CampfireSprite cs = new CampfireSprite(campfire);
                 cs.setPosition(v);
                 mPathSprites.add(cs);
+                mWorldObjects.add(cs);
                 prev = v;
-                Light campfire = mLightManager.createLight(v);
-                campfire.setInnerRadius(10.0f);
-                campfire.setOuterRadius(50.0f);
             }
         }
 
-        //mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
+        // mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
 
         Gdx.input.setCursorCatched(true);
 
@@ -328,10 +327,10 @@ public class GameHolder implements ApplicationListener {
         for (GameObject o : mWorldObjects) {
             o.update();
         }
-        
-        for (CampfireSprite cs : mPathSprites) {
-            cs.update();
-        }
+
+        /*
+         * for (CampfireSprite cs : mPathSprites) { cs.update(); }
+         */
 
         mMouse.update();
 
@@ -345,7 +344,8 @@ public class GameHolder implements ApplicationListener {
             mDrawWin = true;
         }
 
-        if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < Constants.getFloat("die_radius")) {
+        if (new Vector2(mPlayer.getPosition()).sub(mChaser.getPosition()).len() < Constants
+                .getFloat("die_radius")) {
             mDrawLose = true;
         }
 
@@ -375,24 +375,21 @@ public class GameHolder implements ApplicationListener {
         }
         mFog.emitRenderables(mQueueProxy);
         mQueueProxy.commit();
-        
 
         mBatch.begin();
-        
 
         setShaderValues();
         for (Renderable renderable : mToRender) {
             renderable.draw(mBatch);
         }
         mBatch.end();
-        mPathBatch.setProjectionMatrix(mCamera.combined);
-        mPathBatch.setTransformMatrix(new Matrix4().translate(
-                -getCameraOrigin().x, -getCameraOrigin().y, 0));
-        mPathBatch.begin();
-        for (CampfireSprite s : mPathSprites) {
-            s.draw(mPathBatch);
-        }
-        mPathBatch.end();
+        /*
+         * mPathBatch.setProjectionMatrix(mCamera.combined);
+         * mPathBatch.setTransformMatrix(new Matrix4().translate(
+         * -getCameraOrigin().x, -getCameraOrigin().y, 0)); mPathBatch.begin();
+         * for (CampfireSprite s : mPathSprites) { s.draw(mPathBatch); }
+         * mPathBatch.end();
+         */
 
         mSpecialBatch.setProjectionMatrix(mCamera.combined);
         mSpecialBatch.begin();

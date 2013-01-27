@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class CampfireSprite implements GameObject {
@@ -12,15 +11,20 @@ public class CampfireSprite implements GameObject {
     private Sprite mOnSprite;
     private Sprite mOffSprite;
 
-    private List<Sprite> mOnSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mOnSprites = new ArrayList<Sprite>();
 
-    private List<Sprite> mOffSprites = new ArrayList<Sprite>();
+    private final List<Sprite> mOffSprites = new ArrayList<Sprite>();
 
     private boolean mOn = true;
     private Vector2 mPosition;
-    private int count = 0;
+    private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -64.0f);
 
-    public CampfireSprite() {
+    private final Light mLight;
+
+    public CampfireSprite(Light light) {
+        mLight = light;
+        mLight.setInnerRadius(10.0f);
+        mLight.setOuterRadius(50.0f);
         loadFrames(mOnSprites, 24, "campfire_large_", ".png");
         loadFrames(mOffSprites, 20, "campfire_small_", ".png");
     }
@@ -62,31 +66,35 @@ public class CampfireSprite implements GameObject {
         if (PlayerObject.getInstance().getPosition().dst(mPosition) < 40
                 && !paniced) {
             mOn = false;
+            mLight.setInnerRadius(3.0f);
+            mLight.setOuterRadius(28.0f);
         }
     }
 
     @Override
     public void emitRenderables(RenderQueueProxy renderQueue) {
+        Vector2 drawPosition = mPosition.cpy().add(SPRITE_OFFSET);
         if (mOn) {
-            mOnSprite.setPosition(mPosition.x, mPosition.y);
-            renderQueue.add(new SpriteRenderable(mOnSprite), (int) mPosition.y);
+            mOnSprite.setPosition(drawPosition.x, drawPosition.y);
+            renderQueue.add(new SpriteRenderable(mOnSprite),
+                    (int) mPosition.y + 10);
         } else {
-            mOffSprite.setPosition(mPosition.x, mPosition.y);
-            renderQueue
-                    .add(new SpriteRenderable(mOffSprite), (int) mPosition.y);
+            mOffSprite.setPosition(drawPosition.x, drawPosition.y);
+            renderQueue.add(new SpriteRenderable(mOffSprite),
+                    (int) mPosition.y + 10);
         }
     }
 
-    public void draw(SpriteBatch mPathBatch) {
-        if (mOn) {
-            mOnSprite.setPosition(mPosition.x - mOnSprite.getWidth() / 2,
-                    mPosition.y - mOnSprite.getHeight() / 2);
-            mOnSprite.draw(mPathBatch);
-        } else {
-            mOffSprite.setPosition(mPosition.x - mOffSprite.getWidth() / 2,
-                    mPosition.y - mOffSprite.getHeight() / 2);
-            mOffSprite.draw(mPathBatch);
-        }
-    }
+    // public void draw(SpriteBatch mPathBatch) {
+    // if (mOn) {
+    // mOnSprite.setPosition(mPosition.x - mOnSprite.getWidth() / 2,
+    // mPosition.y - mOnSprite.getHeight() / 2);
+    // mOnSprite.draw(mPathBatch);
+    // } else {
+    // mOffSprite.setPosition(mPosition.x - mOffSprite.getWidth() / 2,
+    // mPosition.y - mOffSprite.getHeight() / 2);
+    // mOffSprite.draw(mPathBatch);
+    // }
+    // }
 
 }

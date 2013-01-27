@@ -329,6 +329,9 @@ public class GameHolder implements ApplicationListener {
         mLoseSprite.setPosition(-400, -300);
         mLoseSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+            System.exit(1);
+        }
     }
 
     private void drawWin() {

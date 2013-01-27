@@ -91,8 +91,13 @@ public class ChaserObject implements GameObject {
                 mOutOfLight++;
             } else if (GameServices.getTicks() % 1 == 0
                     && mHighlightFreeze == 0) {
-                mPosition.add(delta.mul((float) (1.0f * Constants.sConstants
-                        .get("chaser_speed"))));
+                mPosition.add(delta
+                        .cpy()
+                        .nor()
+                        .mul(Constants.getFloat("chaser_constant_speed"))
+                        .add(delta.cpy().mul(
+                                (float) (1.0f * Constants.sConstants
+                                        .get("chaser_speed")))));
             }
             if (mOutOfLight >= (float) (1.0f * Constants.sConstants
                     .get("chaser_reappear_delay"))

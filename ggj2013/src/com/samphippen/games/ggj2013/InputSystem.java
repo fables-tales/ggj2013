@@ -8,12 +8,17 @@ public class InputSystem {
     private static InputSystem sInstance = null;
 
     private static float mSpeed = 1.0f;
-    private static float mTargetSpeed = 1.0f;
     private static int mRunTime = 0;
     private static boolean mExhausted = false;
 
     private static final float DEAD_ZONE_SIZE = (float) (1.0f * Constants.sConstants
             .get("dead_zone_size"));
+
+    public static void reset() {
+        mSpeed = 1.0f;
+        mRunTime = 0;
+        mExhausted = false;
+    }
 
     public static InputSystem getInstance() {
         if (sInstance == null) {
@@ -23,6 +28,10 @@ public class InputSystem {
         return sInstance;
     }
 
+    public static Vector2 disable(){
+        return new Vector2(0, 0);
+    }
+    
     public static Vector2 mouseSpeedVector() {
         float x = Gdx.input.getX() * 1.0f / (GameServices.WIDTH / 2) - 1;
         float y = 1.0f - Gdx.input.getY() * 1.0f / (GameServices.HEIGHT / 2);

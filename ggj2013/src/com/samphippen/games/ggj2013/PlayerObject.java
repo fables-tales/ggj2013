@@ -16,12 +16,16 @@ public class PlayerObject implements GameObject {
 
     private final Double NUMPER_FAST_PULSES = Constants.sConstants
             .get("number_fast_pulses");
-    
+
     private Sprite mCurrentSprite;
-    private Sprite mUpSprite;
-    private Sprite mDownSprite;
-    private Sprite mLeftSprite;
-    private Sprite mRightSprite;
+    private final Sprite mUpSprite;
+    private final Sprite mDownSprite;
+    private final Sprite mLeftSprite;
+    private final Sprite mRightSprite;
+
+    public static void reset() {
+        sInstance = null;
+    }
 
     private PlayerObject() {
         mLeftSprite = GameServices.loadSprite("player_left.png");
@@ -100,7 +104,8 @@ public class PlayerObject implements GameObject {
 
     @Override
     public void emitRenderables(RenderQueueProxy renderables) {
-        renderables.add(new SpriteRenderable(mCurrentSprite), (int) mPosition.y);
+        renderables
+                .add(new SpriteRenderable(mCurrentSprite), (int) mPosition.y);
     }
 
 }

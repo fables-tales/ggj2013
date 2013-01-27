@@ -42,3 +42,4 @@ number_of_trees_in_safezone_ring 13
 player_exhausted_speed 1
 exhausted_run_time 300
 speed_smoothness 0.84
+campfire_safe_zone_size 100

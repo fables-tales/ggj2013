@@ -41,6 +41,28 @@ public class ChaserObject implements GameObject {
         mHighlightFreeze = Constants.getInt("chaser_highlight_freeze_ticks");
     }
 
+    private boolean considerPlayerAtRisk() {
+        Vector2 playerPosition = PlayerObject.getInstance().getPosition();
+        if (playerPosition.len() < Constants.getFloat("safe_zone_size")) {
+            // System.err.println("SAFE: in safe zone");
+            return false;
+
+        }
+        for (CampfireSprite campfire : GameHolder.getInstance()
+                .getPathSprites()) {
+            float fireDistance = new Vector2(campfire.getX(), campfire.getY())
+                    .dst(playerPosition);
+            float fireCutoff = Constants.getFloat("campfire_safe_zone_size");
+            if (fireDistance < fireCutoff) {
+                // System.err.println("SAFE: near camp fire");
+                return false;
+
+            }
+        }
+        // System.err.println("UNSAFE");
+        return true;
+    }
+
     @Override
     public void update() {
         if (mHighlight != null) {
@@ -58,9 +80,12 @@ public class ChaserObject implements GameObject {
             --mHighlightFreeze;
         }
         PlayerObject player = PlayerObject.getInstance();
-        if (player.getPosition().len() > Constants.getFloat("safe_zone_size")) {
-            Vector2 playerPosition = player.getPosition();
-
+        Vector2 playerPosition = player.getPosition();
+        boolean atRisk = considerPlayerAtRisk();
+        if (!atRisk && playerPosition.dst(mPosition) < 300.0f) {
+            mPosition = new Vector2(playerPosition.cpy().add(1000.0f, 0.0f));
+        }
+        if (atRisk) {
             Vector2 delta = new Vector2(playerPosition).sub(mPosition);
             if (delta.len() > Constants.getFloat("chaser_light_distance")) {
                 mOutOfLight++;

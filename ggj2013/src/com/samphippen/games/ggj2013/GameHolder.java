@@ -1,6 +1,7 @@
 package com.samphippen.games.ggj2013;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -38,6 +39,10 @@ public class GameHolder implements ApplicationListener {
     private ShaderProgram mShader;
     private final List<CampfireSprite> mPathSprites = new ArrayList<CampfireSprite>();
 
+    public List<CampfireSprite> getPathSprites() {
+        return Collections.unmodifiableList(mPathSprites);
+    }
+
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;
     private boolean mDrawWin = false;
@@ -58,11 +63,12 @@ public class GameHolder implements ApplicationListener {
     private long mLastAmplificationTick = 0;
 
     private static final int NLIGHTS = 8;
-    private final LightManager mLightManager = new LightManager();
+    private LightManager mLightManager;
     private int mGuardFrames;
     private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
+	private int loseCounter = 0;
 
     public LightManager getLightManager() {
         return mLightManager;
@@ -98,10 +104,25 @@ public class GameHolder implements ApplicationListener {
         return eyes;
     }
 
+    private void destroySomeBees() {
+        InputSystem.reset();
+        PlayerObject.reset();
+        mDrawLose = false;
+        mDrawWin = false;
+        mSplash = true;
+        mWorldObjects.clear();
+        mToRender.clear();
+        mPathSprites.clear();
+    }
+
     @Override
     public void create() {
-        assert sSharedInstance == null : "duplicate GameHolder";
+        if (sSharedInstance != null) {
+            assert sSharedInstance == this : "duplicate GameHolder";
+            destroySomeBees();
+        }
         sSharedInstance = this;
+        mLightManager = new LightManager();
         float nativeGamma = 2.4f;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             nativeGamma = 1.8f;
@@ -326,13 +347,26 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void drawLose() {
+    	InputSystem.disable();
         Gdx.input.setCursorCatched(false);
         mSpecialBatch.begin();
-        mLoseSprite.setPosition(-400, -300);
-        mLoseSprite.draw(mSpecialBatch);
+        loseCounter ++;
+//        mShader.setUniform1fv(
+//                "radial_a",
+//                new float[] { (float) (1 * Constants.sConstants
+//                        .get("radial_lighting_a") * (1.0f + 4.0f * mRadialAdjust)) },
+//                0, 1);
+        if(loseCounter > 60 && loseCounter <= 120){
+            GameHolder.getInstance().redPulse();        	
+        }
+        if(loseCounter > 120){
+	        mLoseSprite.setPosition(-400, -300);
+	        mLoseSprite.draw(mSpecialBatch);
+        }
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            System.exit(1);
+            // System.exit(1);
+            create();
         }
     }
 
@@ -343,7 +377,8 @@ public class GameHolder implements ApplicationListener {
         mWinSprite.draw(mSpecialBatch);
         mSpecialBatch.end();
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            System.exit(1);
+            // System.exit(1);
+            create();
         }
     }
 

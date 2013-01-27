@@ -175,7 +175,7 @@ public class GameHolder implements ApplicationListener {
                 + "  }"
                 + createLocalLightLightnessModifier()
                 // TODO change to 0.1
-                // + " if (lightness < 1.0) lightness = 1.0;"
+                //+ " if (lightness < 1.0) lightness = 1.0;"
                 + " if (lightness < 0.0) lightness = 0.0;"
                 + " if (lightness > 1.0) lightness = 1.0;"
                 + "  if (uselight == -1.0) gl_FragColor *= lightness;"
@@ -220,6 +220,7 @@ public class GameHolder implements ApplicationListener {
         mWorldObjects.add(mBackground);
         mWorldObjects.add(mPlayer);
         mWorldObjects.add(mChaser);
+        
         // Add obstacles to the world
         ContinuousPathFinder cpf = new ContinuousPathFinder(
                 new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
@@ -270,6 +271,9 @@ public class GameHolder implements ApplicationListener {
                 prev = v;
             }
         }
+        
+        // Make tree ring for starting position
+        obstaclesFactory.makeTreeRing(mPathSprites.get(0).mPosition.angle());
 
         // mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
 

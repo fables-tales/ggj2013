@@ -16,7 +16,7 @@ public class CampfireSprite implements GameObject {
 
     private boolean mOn = true;
     private int mTransitionFrame = 0;
-    private Vector2 mPosition;
+    public Vector2 mPosition;
     private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -46.0f);
 
     private final Light mLight;

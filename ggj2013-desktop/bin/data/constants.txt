@@ -15,7 +15,7 @@ chaser_reappear_delay 6
 chaser_reappear_extra_random_delay 10
 waypoint_spacing 500
 obstacle_width 40
-obstacle_density 0.00004
+obstacle_density 0.0000004
 chaser_spawn_random_radius 400
 chaser_spawn_constant_spawn_radius 100
 end_point_distance_min 3000
@@ -27,3 +27,8 @@ tree_slow_speed 0.9
 big_pulse_amp 10
 die_radius 30
 chaser_light_distance 200
+blob_alpha_high 0.4
+blob_alpha_low 0
+blob_alpha_fade_in 0.01
+blob_alpha_fade_out 0.99
+blob_wideness 5

@@ -28,6 +28,10 @@ public class CampfireSprite implements GameObject {
         loadFrames(mOnSprites, 24, "campfire_large_", ".png");
         loadFrames(mOffSprites, 20, "campfire_small_", ".png");
     }
+    
+    public boolean getOn() {
+        return mOn;
+    }
 
     public void loadFrames(List<Sprite> out, int count, String prefix,
             String suffix) {

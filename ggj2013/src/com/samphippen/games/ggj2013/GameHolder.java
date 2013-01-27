@@ -41,6 +41,7 @@ public class GameHolder implements ApplicationListener {
     private SoundManager mSoundManager;
     private SpriteBatch mPathBatch;
     private boolean mDrawWin = false;
+    private OrangeBlob mOb;
     private Sprite mWinSprite;
     private ChaserObject mChaser;
     private boolean mDrawLose = false;
@@ -222,6 +223,8 @@ public class GameHolder implements ApplicationListener {
         ObstaclesFactory obstaclesFactory = new ObstaclesFactory(mWorldObjects,
                 cpf);
         obstaclesFactory.makeObstacles();
+        
+        mOb = new OrangeBlob();
 
         mFog = new SmokeObject();
         // Distance to winning point destination
@@ -289,6 +292,15 @@ public class GameHolder implements ApplicationListener {
         }
 
     }
+    
+    public Vector2 getFirstOnFire() {
+        for (CampfireSprite cs : mPathSprites) {
+            if (cs.getOn()) {
+                return new Vector2(cs.getX(), cs.getY());
+            }
+        }
+        return null;
+    }
 
     private void drawSplash() {
         mSpecialBatch.begin();
@@ -335,6 +347,8 @@ public class GameHolder implements ApplicationListener {
          */
 
         mMouse.update();
+        
+        mOb.update();
 
         GameServices.advanceTicks();
         mFog.update();
@@ -396,6 +410,7 @@ public class GameHolder implements ApplicationListener {
         mSpecialBatch.setProjectionMatrix(mCamera.combined);
         mSpecialBatch.begin();
         mMouse.draw(mSpecialBatch);
+        mOb.draw(mSpecialBatch);
         mSpecialBatch.end();
 
     }

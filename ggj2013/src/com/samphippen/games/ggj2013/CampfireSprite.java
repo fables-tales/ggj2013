@@ -25,6 +25,7 @@ public class CampfireSprite implements GameObject {
         mLight = light;
         mLight.setInnerRadius(10.0f);
         mLight.setOuterRadius(50.0f);
+        mLight.setIntensity(0.7f);
         loadFrames(mOnSprites, 24, "campfire_large_", ".png");
         loadFrames(mOffSprites, 20, "campfire_small_", ".png");
     }

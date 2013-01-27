@@ -61,6 +61,10 @@ public class GameHolder implements ApplicationListener {
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
 
+    public LightManager getLightManager() {
+        return mLightManager;
+    }
+
     public SoundManager getSoundManager() {
         return mSoundManager;
     }
@@ -69,20 +73,20 @@ public class GameHolder implements ApplicationListener {
         String eyes = "";
         for (int i = 0; i < NLIGHTS; ++i) {
             eyes += "uniform vec4 localLight" + i + ";\n";
+            eyes += "uniform float localLightIntensity" + i + ";\n";
         }
         return eyes;
     }
 
     private static String createLocalLightLightnessModifier() {
         String eyes = "";
-        float lightLevel = 0.7f;
         for (int i = 0; i < NLIGHTS; ++i) {
             eyes += "{ float local_distance = distance(gl_FragCoord.xy, localLight"
                     + i + ".xy);";
             eyes += "if (local_distance < localLight" + i
-                    + ".z) { lightness += " + lightLevel + "; }";
+                    + ".z) { lightness += localLightIntensity" + i + "; }";
             eyes += "else if (local_distance < localLight" + i + ".w) {";
-            eyes += "lightness += " + lightLevel
+            eyes += "lightness += localLightIntensity" + i
                     + " * (1.0 - ((local_distance - localLight" + i
                     + ".z) / (localLight" + i + ".w - localLight" + i
                     + ".z)));";
@@ -229,22 +233,24 @@ public class GameHolder implements ApplicationListener {
                 .get("end_point_distance_min");
         float endPointRandomisedDistance = (float) (Constants.sConstants
                 .get("end_point_distance_max") - endPointMinDistance);
-        Vector2 destination = new Vector2(endPointRandomisedDistance
-                * GameServices.sRng.nextFloat() + endPointRandomisedDistance,
-                endPointRandomisedDistance * GameServices.sRng.nextFloat()
-                        + endPointRandomisedDistance);
-        if (GameServices.sRng.nextBoolean()) {
-            destination.x = -destination.x;
-        }
-        if (GameServices.sRng.nextBoolean()) {
-            destination.y = -destination.y;
-        }
+        List<Vector2> path;
+        do {
+            Vector2 destination = new Vector2(endPointRandomisedDistance
+                    * GameServices.sRng.nextFloat()
+                    + endPointRandomisedDistance, endPointRandomisedDistance
+                    * GameServices.sRng.nextFloat()
+                    + endPointRandomisedDistance);
+            if (GameServices.sRng.nextBoolean()) {
+                destination.x = -destination.x;
+            }
+            if (GameServices.sRng.nextBoolean()) {
+                destination.y = -destination.y;
+            }
 
-        List<Vector2> path = cpf.findPath(
-                GameServices.toPathFinder(mPlayer.getPosition()),
-                GameServices.toPathFinder(destination));
-
-        assert path != null : "no path to destination";
+            path = cpf.findPath(
+                    GameServices.toPathFinder(mPlayer.getPosition()),
+                    GameServices.toPathFinder(destination));
+        } while (path == null);
 
         Vector2 prev = mPlayer.getPosition();
 
@@ -451,11 +457,15 @@ public class GameHolder implements ApplicationListener {
                     new float[] { lightPosScreenSpace.x, lightPosScreenSpace.y,
                             light.getInnerRadius(), light.getOuterRadius() },
                     0, 4);
+            mShader.setUniform1fv("localLightIntensity" + lightIndex,
+                    new float[] { light.getIntensity() }, 0, 1);
             ++lightIndex;
         }
         for (; lightIndex < NLIGHTS; ++lightIndex) {
             mShader.setUniform4fv("localLight" + lightIndex, new float[] {
                     -10.0f, -10.0f, 0.0f, 1.0f }, 0, 1);
+            mShader.setUniform1fv("localLightIntensity" + lightIndex,
+                    new float[] { 0.0f }, 0, 1);
         }
     }
 

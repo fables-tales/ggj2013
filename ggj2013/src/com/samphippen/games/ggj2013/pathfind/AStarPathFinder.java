@@ -26,8 +26,8 @@ public class AStarPathFinder implements PathFinder {
             return path;
         }
 
-        assert !outOfBounds(from, provider) : "target out of bounds";
-        assert !outOfBounds(to, provider) : "source out of bounds";
+        assert !outOfBounds(from, provider) : "source out of bounds";
+        assert !outOfBounds(to, provider) : "target out of bounds";
 
         int gridWidth = provider.getWidth();
         int gridHeight = provider.getHeight();

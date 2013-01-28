@@ -12,8 +12,8 @@ public abstract class GameServices {
 
     public static float WIDTH = 800;
     public static float HEIGHT = 600;
-    public static float PATH_FINDER_WIDTH = 8000;
-    public static float PATH_FINDER_HEIGHT = 6000;
+    public static float PATH_FINDER_WIDTH = 16000;
+    public static float PATH_FINDER_HEIGHT = 12000;
 
     private static long tickCount = 0;
 

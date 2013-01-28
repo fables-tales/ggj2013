@@ -12,8 +12,8 @@ public class ContinuousPathFinder {
     private final float mWorldWidth;
     private final float mWorldHeight;
 
-    private final int GRID_WIDTH = 100;
-    private final int GRID_HEIGHT = 100;
+    private final int GRID_WIDTH = 200;
+    private final int GRID_HEIGHT = 200;
 
     private final Set<Position> mObstacleCells = new HashSet<Position>();
 

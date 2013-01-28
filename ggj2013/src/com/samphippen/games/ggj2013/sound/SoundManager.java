@@ -71,17 +71,29 @@ public class SoundManager {
     }
 
     public void step() {
-        float pitch = (float) Math.pow(2.0,
-                0.1 * GameServices.sRng.nextGaussian());
+        float volume = generateStepVolume();
+        Sound stepper = pickStepEffect();
+        long instance = stepper.play(volume);
+        stepper.setPitch(instance, generateStepPitch());
+    }
+
+    private float generateStepVolume() {
         long currentTick = GameServices.getTicks();
         float baseVolume = currentTick - mLastStepTick > 35 ? 0.4f : 0.7f;
         mLastStepTick = currentTick;
         float volume = (float) (baseVolume + 0.05 * GameServices.sRng
                 .nextGaussian());
+        return volume;
+    }
+
+    private Sound pickStepEffect() {
         int selectedStep = GameServices.sRng.nextInt(NUM_FOOTSTEPS);
-        Sound stepper = mFootstepSounds.get(selectedStep);
-        long instance = stepper.play(volume);
-        stepper.setPitch(instance, pitch);
+        return mFootstepSounds.get(selectedStep);
+    }
+
+    private float generateStepPitch() {
+        return (float) Math.pow(2.0,
+                0.1 * GameServices.sRng.nextGaussian());
     }
 
     public void thunk() {

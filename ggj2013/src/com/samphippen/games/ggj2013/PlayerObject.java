@@ -70,6 +70,12 @@ public class PlayerObject implements GameObject {
     public void update() {
         mPrevPosition = mPosition.cpy();
         mPosition.add(InputSystem.mouseSpeedVector());
+        selectSprite();
+        mCurrentSprite.setPosition(mPosition.x - 10, mPosition.y - 30);
+        mHeartbeatRadius = calculateHeartBeatRadius();
+    }
+
+    private void selectSprite() {
         Vector2 delta = new Vector2(mPosition).sub(mPrevPosition);
         if (Math.abs(delta.y) >= Math.abs(delta.x)) {
             if (delta.y > 0) {
@@ -84,8 +90,6 @@ public class PlayerObject implements GameObject {
                 mCurrentSprite = currentSprite(mRightSprites);
             }
         }
-        mCurrentSprite.setPosition(mPosition.x - 10, mPosition.y - 30);
-        mHeartbeatRadius = calculateHeartBeatRadius();
     }
 
     public void rejectMovement() {

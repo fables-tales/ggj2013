@@ -123,11 +123,125 @@ public class GameHolder implements ApplicationListener {
         }
         sSharedInstance = this;
         mLightManager = new LightManager();
-        float nativeGamma = 2.4f;
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            nativeGamma = 1.8f;
-        }
         mBlackSprite = GameServices.loadSprite("black.png");
+        createShaders();
+
+        Constants.setConstants();
+        loadScreens();
+        createCamera();
+        createSpriteBatches();
+        initialiseWorldObjects();
+
+        createPathFinder();
+        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(
+                mQuadWorldObjects, mCPF);
+        obstaclesFactory.makeObstacles();
+
+        mOb = new OrangeBlob();
+        mFog = new SmokeObject();
+        // Distance to winning point destination
+        List<Vector2> path = createGoalWithPathway();
+
+        createCampfires(path);
+
+        // Make tree ring for starting position
+        obstaclesFactory
+                .makeTreeRing(mPathSprites.get(0).getPosition().angle());
+
+        // mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
+
+        Gdx.input.setCursorCatched(true);
+
+        mSoundManager = new SoundManager();
+        whitePulse();
+    }
+
+    private List<Vector2> createGoalWithPathway() {
+        double endPointMinDistance = Constants.sConstants
+                .get("end_point_distance_min");
+        float endPointRandomisedDistance = (float) (Constants.sConstants
+                .get("end_point_distance_max") - endPointMinDistance);
+        List<Vector2> path;
+        do {
+            Vector2 destination = new Vector2(endPointRandomisedDistance
+                    * GameServices.sRng.nextFloat()
+                    + endPointRandomisedDistance, endPointRandomisedDistance
+                    * GameServices.sRng.nextFloat()
+                    + endPointRandomisedDistance);
+            if (GameServices.sRng.nextBoolean()) {
+                destination.x = -destination.x;
+            }
+            if (GameServices.sRng.nextBoolean()) {
+                destination.y = -destination.y;
+            }
+
+            path = mCPF.findPath(
+                    GameServices.toPathFinder(mPlayer.getPosition()),
+                    GameServices.toPathFinder(destination));
+        } while (path == null);
+        return path;
+    }
+
+    private void createCampfires(List<Vector2> path) {
+        Vector2 prev = mPlayer.getPosition();
+
+        for (Vector2 v : path) {
+            // Sprite s = GameServices.loadSprite("campfire.png");
+            v = GameServices.fromPathFinder(v);
+            if (new Vector2(prev).sub(v).len() > Constants.sConstants
+                    .get("waypoint_spacing")) {
+                Light campfire = mLightManager.createLight(v);
+                CampfireSprite cs = new CampfireSprite(campfire);
+                cs.setPosition(v);
+                mPathSprites.add(cs);
+                mWorldObjects.add(cs);
+                prev = v;
+            }
+        }
+
+        mPathSprites.get(mPathSprites.size() - 1).setLast();
+    }
+
+    private void createPathFinder() {
+        mCPF = new ContinuousPathFinder(new AStarPathFinder(),
+                GameServices.PATH_FINDER_WIDTH, GameServices.PATH_FINDER_HEIGHT);
+    }
+
+    private void initialiseWorldObjects() {
+        mPlayer = PlayerObject.getInstance();
+
+        mQuadWorldObjects = new Quadtree<GameObject>(-10000.0f, -10000.0f,
+                20000.0f, 20);
+
+        mBackground = new BackgroundObject();
+        mMouse = MouseObject.getInstance();
+        mChaser = new ChaserObject();
+        mWorldObjects.add(mBackground);
+        mWorldObjects.add(mPlayer);
+        mWorldObjects.add(mChaser);
+    }
+
+    private void createSpriteBatches() {
+        mBatch = new SpriteBatch();
+
+        mBatch.setShader(mShader);
+        mSpecialBatch = new SpriteBatch();
+    }
+
+    private void createCamera() {
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        mCamera = new OrthographicCamera(w, h);
+    }
+
+    private void loadScreens() {
+        mWinSprite = GameServices.loadSprite("winscreen.png");
+        mLoseSprite = GameServices.loadSprite("losescreen.png");
+        mTitle1Sprite = GameServices.loadSprite("title_1.png");
+        mTitle2Sprite = GameServices.loadSprite("title_2.png");
+    }
+
+    private void createShaders() {
         String vertexShader = "attribute vec4 "
                 + ShaderProgram.POSITION_ATTRIBUTE
                 + ";\n" //
@@ -212,7 +326,7 @@ public class GameHolder implements ApplicationListener {
                 + "  }"
                 + "  gl_FragColor[3] = tmp;"
                 + "const float GAMMA_ADJUST = (2.4 / "
-                + nativeGamma
+                + getNativeGamma()
                 + ");"
                 + "gl_FragColor[0] = pow(gl_FragColor[0], GAMMA_ADJUST);"
                 + "gl_FragColor[1] = pow(gl_FragColor[1], GAMMA_ADJUST);"
@@ -220,99 +334,19 @@ public class GameHolder implements ApplicationListener {
 
         ShaderProgram.pedantic = false;
 
-        Constants.setConstants();
-        mWinSprite = GameServices.loadSprite("winscreen.png");
-        mLoseSprite = GameServices.loadSprite("losescreen.png");
-        GameServices.loadSprite("splashscreen.png");
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-        mCamera = new OrthographicCamera(w, h);
-        mBatch = new SpriteBatch();
-
         mShader = new ShaderProgram(vertexShader, fragmentShader);
         if (!mShader.isCompiled()) {
             throw new IllegalArgumentException("couldn't compile shader: "
                     + mShader.getLog());
         }
-        mBatch.setShader(mShader);
-        new SpriteBatch();
-        mSpecialBatch = new SpriteBatch();
-        mPlayer = PlayerObject.getInstance();
+    }
 
-        mQuadWorldObjects = new Quadtree<GameObject>(-10000.0f, -10000.0f,
-                20000.0f, 20);
-
-        mBackground = new BackgroundObject();
-        mMouse = MouseObject.getInstance();
-        mChaser = new ChaserObject();
-        mWorldObjects.add(mBackground);
-        mWorldObjects.add(mPlayer);
-        mWorldObjects.add(mChaser);
-
-        // Add obstacles to the world
-        ContinuousPathFinder cpf = new ContinuousPathFinder(
-                new AStarPathFinder(), GameServices.PATH_FINDER_WIDTH,
-                GameServices.PATH_FINDER_HEIGHT);
-        ObstaclesFactory obstaclesFactory = new ObstaclesFactory(
-                mQuadWorldObjects, cpf);
-        obstaclesFactory.makeObstacles();
-
-        mOb = new OrangeBlob();
-        mTitle1Sprite = GameServices.loadSprite("title_1.png");
-        mTitle2Sprite = GameServices.loadSprite("title_2.png");
-        mFog = new SmokeObject();
-        // Distance to winning point destination
-        double endPointMinDistance = Constants.sConstants
-                .get("end_point_distance_min");
-        float endPointRandomisedDistance = (float) (Constants.sConstants
-                .get("end_point_distance_max") - endPointMinDistance);
-        List<Vector2> path;
-        do {
-            Vector2 destination = new Vector2(endPointRandomisedDistance
-                    * GameServices.sRng.nextFloat()
-                    + endPointRandomisedDistance, endPointRandomisedDistance
-                    * GameServices.sRng.nextFloat()
-                    + endPointRandomisedDistance);
-            if (GameServices.sRng.nextBoolean()) {
-                destination.x = -destination.x;
-            }
-            if (GameServices.sRng.nextBoolean()) {
-                destination.y = -destination.y;
-            }
-
-            path = cpf.findPath(
-                    GameServices.toPathFinder(mPlayer.getPosition()),
-                    GameServices.toPathFinder(destination));
-        } while (path == null);
-
-        Vector2 prev = mPlayer.getPosition();
-
-        for (Vector2 v : path) {
-            // Sprite s = GameServices.loadSprite("campfire.png");
-            v = GameServices.fromPathFinder(v);
-            if (new Vector2(prev).sub(v).len() > Constants.sConstants
-                    .get("waypoint_spacing")) {
-                Light campfire = mLightManager.createLight(v);
-                CampfireSprite cs = new CampfireSprite(campfire);
-                cs.setPosition(v);
-                mPathSprites.add(cs);
-                mWorldObjects.add(cs);
-                prev = v;
-            }
+    private float getNativeGamma() {
+        float nativeGamma = 2.4f;
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            nativeGamma = 1.8f;
         }
-
-        mPathSprites.get(mPathSprites.size() - 1).setLast();
-
-        // Make tree ring for starting position
-        obstaclesFactory
-                .makeTreeRing(mPathSprites.get(0).getPosition().angle());
-
-        // mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
-
-        Gdx.input.setCursorCatched(true);
-
-        mSoundManager = new SoundManager();
-        whitePulse();
+        return nativeGamma;
     }
 
     private Rectangle activeRectangle() {
@@ -363,6 +397,7 @@ public class GameHolder implements ApplicationListener {
 
     private float mEndAlpha = 0;
     private float mBlackAlpha = 0;
+    private ContinuousPathFinder mCPF;
 
     private void drawLose() {
         InputSystem.disable();

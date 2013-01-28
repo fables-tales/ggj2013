@@ -65,6 +65,44 @@ public class ChaserObject implements GameObject {
 
     @Override
     public void update() {
+        updateHighlight();
+        PlayerObject player = PlayerObject.getInstance();
+        Vector2 playerPosition = player.getPosition();
+        boolean atRisk = considerPlayerAtRisk();
+        if (!atRisk && playerPosition.dst(mPosition) < 300.0f) {
+            teleportOutOfSight(playerPosition);
+        }
+        if (atRisk) {
+            Vector2 delta = new Vector2(playerPosition).sub(mPosition);
+            if (delta.len() > Constants.getFloat("chaser_light_distance")) {
+                mOutOfLight++;
+            } else if (onApproachTick() && mHighlightFreeze == 0) {
+                approachPlayer(delta);
+            }
+            if (randomTeleportDue()) {
+                teleportNearPlayer(playerPosition);
+            }
+            // Make heartbeat fast if near
+            if (withinHeartAttackRadius(playerPosition)) {
+                if (!mInRadius) {
+                    highlight();
+                }
+                causeHeartAttack(player);
+                mInRadius = true;
+            } else {
+                mInRadius = false;
+            }
+            if (mPosition.dst(playerPosition) > Constants.sConstants
+                    .get("chaser_heart_attack_distance_trigger")
+                    && player.getHeartBeatParameters().getChaserPulseCount() >= 5) {
+                GameHolder.getInstance().whitePulse();
+            }
+
+        }
+        repositionSprites();
+    }
+
+    private void updateHighlight() {
         if (mHighlight != null) {
             final float HIGHLIGHT_DECAY_RATE = Constants
                     .getFloat("chaser_highlight_decay_rate");
@@ -79,68 +117,64 @@ public class ChaserObject implements GameObject {
         if (mHighlightFreeze > 0) {
             --mHighlightFreeze;
         }
-        PlayerObject player = PlayerObject.getInstance();
-        Vector2 playerPosition = player.getPosition();
-        boolean atRisk = considerPlayerAtRisk();
-        if (!atRisk && playerPosition.dst(mPosition) < 300.0f) {
-            mPosition = new Vector2(playerPosition.cpy().add(1000.0f, 0.0f));
-        }
-        if (atRisk) {
-            Vector2 delta = new Vector2(playerPosition).sub(mPosition);
-            if (delta.len() > Constants.getFloat("chaser_light_distance")) {
-                mOutOfLight++;
-            } else if (GameServices.getTicks() % 1 == 0
-                    && mHighlightFreeze == 0) {
-                mPosition.add(delta
-                        .cpy()
-                        .nor()
-                        .mul(Constants.getFloat("chaser_constant_speed"))
-                        .add(delta.cpy().mul(
-                                (float) (1.0f * Constants.sConstants
-                                        .get("chaser_speed")))));
-            }
-            if (mOutOfLight >= (float) (1.0f * Constants.sConstants
-                    .get("chaser_reappear_delay"))
-                    * 60
-                    + GameServices.sRng
-                            .nextInt((int) (60 * Constants.sConstants
-                                    .get("chaser_reappear_extra_random_delay")))) {
-                mOutOfLight = 0;
-                float theta = (float) (GameServices.sRng.nextFloat() * Math.PI * 2);
-                float radius = GameServices.sRng.nextFloat()
-                        * (float) (1.0f * Constants.sConstants
-                                .get("chaser_spawn_random_radius"))
-                        + (float) (1.0f * Constants.sConstants
-                                .get("chaser_spawn_constant_spawn_radius"));
-                float x = (float) (radius * Math.cos(theta));
-                float y = (float) (radius * Math.sin(theta));
-                Vector2 position = new Vector2(playerPosition).add(x, y);
-                mPosition = position;
-            }
-            // Make heartbeat fast if near
-            if (mPosition.dst(playerPosition) < Constants.sConstants
-                    .get("chaser_heart_attack_distance_trigger")) {
-                player.getHeartBeatParameters().setHeartBeatFast();
-                if (!mInRadius) {
-                    highlight();
-                }
-                GameHolder.getInstance().redPulse();
-                GameHolder.getInstance().amplifyPulse();
-                GameHolder.getInstance().getSoundManager().screech();
-                player.getHeartBeatParameters().setChaserPulseCount(0);
-                mInRadius = true;
-            } else {
-                mInRadius = false;
-            }
-            if (mPosition.dst(playerPosition) > Constants.sConstants
-                    .get("chaser_heart_attack_distance_trigger")
-                    && player.getHeartBeatParameters().getChaserPulseCount() >= 5) {
-                GameHolder.getInstance().whitePulse();
-            }
+    }
 
-        }
+    private void repositionSprites() {
         mSprite.setPosition(mPosition.x, mPosition.y);
         mRevealSprite.setPosition(mPosition.x, mPosition.y);
+    }
+
+    private void causeHeartAttack(PlayerObject player) {
+        player.getHeartBeatParameters().setHeartBeatFast();
+        GameHolder.getInstance().redPulse();
+        GameHolder.getInstance().amplifyPulse();
+        GameHolder.getInstance().getSoundManager().screech();
+        player.getHeartBeatParameters().setChaserPulseCount(0);
+    }
+
+    private boolean withinHeartAttackRadius(Vector2 playerPosition) {
+        return mPosition.dst(playerPosition) < Constants.sConstants
+                .get("chaser_heart_attack_distance_trigger");
+    }
+
+    private void teleportNearPlayer(Vector2 playerPosition) {
+        mOutOfLight = 0;
+        float theta = (float) (GameServices.sRng.nextFloat() * Math.PI * 2);
+        float radius = GameServices.sRng.nextFloat()
+                * (float) (1.0f * Constants.sConstants
+                        .get("chaser_spawn_random_radius"))
+                + (float) (1.0f * Constants.sConstants
+                        .get("chaser_spawn_constant_spawn_radius"));
+        float x = (float) (radius * Math.cos(theta));
+        float y = (float) (radius * Math.sin(theta));
+        Vector2 position = new Vector2(playerPosition).add(x, y);
+        mPosition = position;
+    }
+
+    private boolean randomTeleportDue() {
+        return mOutOfLight >= (float) (1.0f * Constants.sConstants
+                .get("chaser_reappear_delay"))
+                * 60
+                + GameServices.sRng.nextInt((int) (60 * Constants.sConstants
+                        .get("chaser_reappear_extra_random_delay")));
+    }
+
+    private boolean onApproachTick() {
+        return GameServices.getTicks() % 1 == 0;
+    }
+
+    private void approachPlayer(Vector2 delta) {
+        mPosition.add(delta
+                .cpy()
+                .nor()
+                .mul(Constants.getFloat("chaser_constant_speed"))
+                .add(delta.cpy().mul(
+                        (float) (1.0f * Constants.sConstants
+                                .get("chaser_speed")))));
+    }
+
+    private void teleportOutOfSight(Vector2 playerPosition) {
+        mPosition = new Vector2(playerPosition.cpy().add(1000.0f, 0.0f));
     }
 
     @Override

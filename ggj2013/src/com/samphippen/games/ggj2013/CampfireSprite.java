@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.sun.jmx.remote.util.Service;
 
 public class CampfireSprite implements GameObject {
 
@@ -17,12 +16,12 @@ public class CampfireSprite implements GameObject {
 
     private boolean mOn = true;
     private int mTransitionFrame = 0;
-    public Vector2 mPosition;
+    private Vector2 mPosition;
     private final static Vector2 SPRITE_OFFSET = new Vector2(-56.0f, -46.0f);
 
     private final Light mLight;
 
-    private Sprite mLastSprite;
+    private final Sprite mLastSprite;
 
     public CampfireSprite(Light light) {
         mLight = light;
@@ -116,6 +115,10 @@ public class CampfireSprite implements GameObject {
                 }
             }
         }
+    }
+
+    public Vector2 getPosition() {
+        return mPosition;
     }
 
     // public void draw(SpriteBatch mPathBatch) {

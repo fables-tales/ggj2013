@@ -1,7 +1,5 @@
 package com.samphippen.games.ggj2013;
 
-import java.awt.Menu;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -93,9 +91,10 @@ public class InputSystem {
             ++mRunTime;
             if (mRunTime > Constants.getInt("exhausted_run_time")) {
                 mExhausted = true;
-                
+
             }
-            PlayerObject.getInstance().HeartBeatParameters.setHeartBeatFast();
+            PlayerObject.getInstance().getHeartBeatParameters()
+                    .setHeartBeatFast();
             GameHolder.getInstance().getSoundManager().setPantingTarget(1.0f);
             targetSpeed = Constants.getFloat("player_sprint_speed");
         } else {
@@ -111,7 +110,7 @@ public class InputSystem {
         if (mEnabled) {
             return result.nor().mul(mSpeed);
         } else {
-            return new Vector2(0,0);
+            return new Vector2(0, 0);
         }
     }
 

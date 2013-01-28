@@ -30,7 +30,7 @@ public class SmokeObject implements GameObject {
         mTransform.set(x, y);
     }
 
-    int k = 0;
+    private int k = 0;
 
     @Override
     public void update() {

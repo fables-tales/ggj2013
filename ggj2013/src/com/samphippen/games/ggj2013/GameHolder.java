@@ -47,7 +47,6 @@ public class GameHolder implements ApplicationListener {
     }
 
     private SoundManager mSoundManager;
-    private SpriteBatch mPathBatch;
     private boolean mDrawWin = false;
     private OrangeBlob mOb;
     private Sprite mWinSprite;
@@ -61,15 +60,11 @@ public class GameHolder implements ApplicationListener {
     private float mPulseB = 1.0f;
     float mPulseG = 1.0f;
     private boolean mSplash = true;
-    private Sprite mSplashSprite;
-
-    float mRadialAdjust = 0.0f;
+    private float mRadialAdjust = 0.0f;
     private long mLastAmplificationTick = 0;
 
     private static final int NLIGHTS = 8;
     private LightManager mLightManager;
-    private int mGuardFrames;
-    private int mFirstPulseCounter;
     private boolean mWhitePulseCalled = true;
     private SmokeObject mFog;
     private int loseCounter = 0;
@@ -228,7 +223,7 @@ public class GameHolder implements ApplicationListener {
         Constants.setConstants();
         mWinSprite = GameServices.loadSprite("winscreen.png");
         mLoseSprite = GameServices.loadSprite("losescreen.png");
-        mSplashSprite = GameServices.loadSprite("splashscreen.png");
+        GameServices.loadSprite("splashscreen.png");
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         mCamera = new OrthographicCamera(w, h);
@@ -240,7 +235,7 @@ public class GameHolder implements ApplicationListener {
                     + mShader.getLog());
         }
         mBatch.setShader(mShader);
-        mPathBatch = new SpriteBatch();
+        new SpriteBatch();
         mSpecialBatch = new SpriteBatch();
         mPlayer = PlayerObject.getInstance();
 
@@ -309,7 +304,8 @@ public class GameHolder implements ApplicationListener {
         mPathSprites.get(mPathSprites.size() - 1).setLast();
 
         // Make tree ring for starting position
-        obstaclesFactory.makeTreeRing(mPathSprites.get(0).mPosition.angle());
+        obstaclesFactory
+                .makeTreeRing(mPathSprites.get(0).getPosition().angle());
 
         // mPathSprites.get(mPathSprites.size() - 1).setColor(1, 1, 1, 1);
 
@@ -423,7 +419,6 @@ public class GameHolder implements ApplicationListener {
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             System.exit(1);
         }
-        mGuardFrames -= 1;
         for (GameObject o : mWorldObjects) {
             o.update();
         }
@@ -579,10 +574,10 @@ public class GameHolder implements ApplicationListener {
     }
 
     private void setShaderValues() {
-        float glowRadius = mPlayer.mHeartbeatRadius;
+        float glowRadius = mPlayer.getHeartbeatRadius();
         float maxGlowRadius = 300;
-        if (mPlayer.HeartBeatParameters.chaserPulseCount == 0
-                && mPlayer.HeartBeatParameters.isFastHeartbeat()
+        if (mPlayer.getHeartBeatParameters().getChaserPulseCount() == 0
+                && mPlayer.getHeartBeatParameters().isFastHeartbeat()
                 && mWhitePulseCalled) {
             glowRadius *= Constants.getFloat("big_pulse_amp");
             maxGlowRadius *= Constants.getFloat("big_pulse_amp");
@@ -666,7 +661,7 @@ public class GameHolder implements ApplicationListener {
     }
 
     public void redPulse() {
-        if (mPlayer.HeartBeatParameters.chaserPulseCount == 1) {
+        if (mPlayer.getHeartBeatParameters().getChaserPulseCount() == 1) {
             mWhitePulseCalled = false;
         }
         mPulseR = 1.0f;
@@ -688,5 +683,13 @@ public class GameHolder implements ApplicationListener {
         } else {
             mPulseB = 1.0f;
         }
+    }
+
+    float getRadialAdjust() {
+        return mRadialAdjust;
+    }
+
+    void setRadialAdjust(float mRadialAdjust) {
+        this.mRadialAdjust = mRadialAdjust;
     }
 }

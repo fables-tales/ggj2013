@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SpriteRenderable implements Renderable {
-    
-    private Sprite mSprite;
-    
+
+    private final Sprite mSprite;
+
     public SpriteRenderable(Sprite s) {
         mSprite = s;
     }
-    
+
     public SpriteRenderable(String fileName) {
         this(GameServices.loadSprite(fileName));
     }
@@ -19,6 +19,4 @@ public class SpriteRenderable implements Renderable {
     public void draw(SpriteBatch batch) {
         mSprite.draw(batch);
     }
-    
-    
 }

@@ -9,12 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 public class PlayerObject implements GameObject {
 
     private static PlayerObject sInstance = null;
-    public float mHeartbeatRadius = (float) 1.0;
+    private float mHeartbeatRadius = (float) 1.0;
     private Vector2 mPrevPosition = new Vector2(0, 0);
     private Vector2 mPosition = new Vector2(0, 0);
-    public int mTicks = 0;
-    public HeartBeatParameters HeartBeatParameters = new HeartBeatParameters();
-    private final double incrementTicks = Constants.sConstants
+    private int mTicks = 0;
+    private HeartBeatParameters mHeartBeatParameters = new HeartBeatParameters();
+    private final double mIncrementTicks = Constants.sConstants
             .get("heartbeat_speed_multiplier");
 
     private final Double NUMPER_FAST_PULSES = Constants.sConstants
@@ -33,8 +33,8 @@ public class PlayerObject implements GameObject {
         return sourceList.get(frame);
     }
 
-    public void loadFrames(List<Sprite> out, int start, int end, String prefix,
-            String suffix) {
+    private void loadFrames(List<Sprite> out, int start, int end,
+            String prefix, String suffix) {
         for (int i = start; i <= end; i++) {
             String filename = "" + i;
             while (filename.length() < 3) {
@@ -93,9 +93,9 @@ public class PlayerObject implements GameObject {
     }
 
     public float calculateHeartBeatRadius() {
-        mTicks += incrementTicks
-                * (1.0f + GameHolder.getInstance().mRadialAdjust);
-        if (mTicks >= HeartBeatParameters.getMaxRadius()) {
+        mTicks += mIncrementTicks
+                * (1.0f + GameHolder.getInstance().getRadialAdjust());
+        if (mTicks >= mHeartBeatParameters.getMaxRadius()) {
             mTicks = 0;
         }
 
@@ -103,15 +103,18 @@ public class PlayerObject implements GameObject {
             GameHolder.getInstance().getSoundManager().beatHeart();
         }
 
-        if (HeartBeatParameters.isFastHeartbeat()) {
+        if (mHeartBeatParameters.isFastHeartbeat()) {
             if (mTicks == 0) {
-                HeartBeatParameters.chaserPulseCount++;
-                HeartBeatParameters.elapsedFastPulses++;
-                HeartBeatParameters.treePulseCount++;
+                mHeartBeatParameters.setChaserPulseCount(mHeartBeatParameters
+                        .getChaserPulseCount() + 1);
+                mHeartBeatParameters.setElapsedFastPulses(mHeartBeatParameters
+                        .getElapsedFastPulses() + 1);
+                mHeartBeatParameters.setTreePulseCount(mHeartBeatParameters
+                        .getTreePulseCount() + 1);
             }
 
-            if (HeartBeatParameters.elapsedFastPulses >= NUMPER_FAST_PULSES) {
-                HeartBeatParameters.setHeartBeatSlow();
+            if (mHeartBeatParameters.getElapsedFastPulses() >= NUMPER_FAST_PULSES) {
+                mHeartBeatParameters.setHeartBeatSlow();
                 InputSystem.getInstance().setNormal();
                 GameHolder.getInstance().whitePulse();
             }
@@ -119,7 +122,7 @@ public class PlayerObject implements GameObject {
             GameHolder.getInstance().whitePulse();
         }
 
-        return (float) (mTicks * incrementTicks);
+        return (float) (mTicks * mIncrementTicks);
     }
 
     public Vector2 getPosition() {
@@ -130,6 +133,22 @@ public class PlayerObject implements GameObject {
     public void emitRenderables(RenderQueueProxy renderables) {
         renderables
                 .add(new SpriteRenderable(mCurrentSprite), (int) mPosition.y);
+    }
+
+    public float getHeartbeatRadius() {
+        return mHeartbeatRadius;
+    }
+
+    public void setHeartbeatRadius(float mHeartbeatRadius) {
+        this.mHeartbeatRadius = mHeartbeatRadius;
+    }
+
+    public HeartBeatParameters getHeartBeatParameters() {
+        return mHeartBeatParameters;
+    }
+
+    public void setHeartBeatParameters(HeartBeatParameters heartBeatParameters) {
+        mHeartBeatParameters = heartBeatParameters;
     }
 
 }

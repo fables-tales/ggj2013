@@ -120,21 +120,21 @@ public class ChaserObject implements GameObject {
             // Make heartbeat fast if near
             if (mPosition.dst(playerPosition) < Constants.sConstants
                     .get("chaser_heart_attack_distance_trigger")) {
-                player.HeartBeatParameters.setHeartBeatFast();
+                player.getHeartBeatParameters().setHeartBeatFast();
                 if (!mInRadius) {
                     highlight();
                 }
                 GameHolder.getInstance().redPulse();
                 GameHolder.getInstance().amplifyPulse();
                 GameHolder.getInstance().getSoundManager().screech();
-                player.HeartBeatParameters.chaserPulseCount = 0;
+                player.getHeartBeatParameters().setChaserPulseCount(0);
                 mInRadius = true;
             } else {
                 mInRadius = false;
             }
             if (mPosition.dst(playerPosition) > Constants.sConstants
                     .get("chaser_heart_attack_distance_trigger")
-                    && player.HeartBeatParameters.chaserPulseCount >= 5) {
+                    && player.getHeartBeatParameters().getChaserPulseCount() >= 5) {
                 GameHolder.getInstance().whitePulse();
             }
 

@@ -10,18 +10,22 @@ import com.samphippen.games.ggj2013.GameServices;
 
 public class SoundManager {
     private static final int NUM_FOOTSTEPS = 9;
+    private static final float PANT_UPDATE_SPEED = 0.93f;
+    private static final int SCREECH_DEBOUNCE = 240;
+    private static final int THUNK_DEBOUNCE = 40;
+    private static final float WIND_VOLUME = 0.25f;
+    private final List<Sound> mFootstepSounds = new ArrayList<Sound>();
     private final Sound mHeartBeat;
-    private final Sound mThunk;
-    private final Sound mScreech;
-    private final Music mPanting;
-    private final Music mWind;
-    private float mPantingTarget = 0.0f;
-    private float mPantingLevel = 0.0f;
     private long mHeartBeatInstance = 0;
-    private long mLastThunkTick = 0;
     private long mLastScreechTick = 0;
     private long mLastStepTick = 0;
-    private final List<Sound> mFootstepSounds = new ArrayList<Sound>();
+    private long mLastThunkTick = 0;
+    private final Music mPanting;
+    private float mPantingLevel = 0.0f;
+    private float mPantingTarget = 0.0f;
+    private final Sound mScreech;
+    private final Sound mThunk;
+    private final Music mWind;
 
     public SoundManager() {
         mHeartBeat = Gdx.audio.newSound(Gdx.files
@@ -41,19 +45,29 @@ public class SoundManager {
         mWind = Gdx.audio.newMusic(Gdx.files.internal("bin/data/wind.wav"));
         mWind.play();
         mWind.setLooping(true);
-        mWind.setVolume(0.25f);
-    }
-
-    public void update() {
-        final float UPDATE_SPEED = 0.93f;
-        mPantingLevel = mPantingLevel * UPDATE_SPEED + mPantingTarget
-                * (1.0f - UPDATE_SPEED);
-        mPanting.setVolume(mPantingLevel);
+        mWind.setVolume(WIND_VOLUME);
     }
 
     public void beatHeart() {
         mHeartBeat.stop(mHeartBeatInstance);
         mHeartBeatInstance = mHeartBeat.play();
+    }
+
+    public void killThings() {
+        mPanting.stop();
+        mWind.stop();
+    }
+
+    public void screech() {
+        long currentTick = GameServices.getTicks();
+        if (currentTick > mLastScreechTick + SCREECH_DEBOUNCE) {
+            mLastScreechTick = currentTick;
+            mScreech.play();
+        }
+    }
+
+    public void setPantingTarget(float level) {
+        mPantingTarget = level;
     }
 
     public void step() {
@@ -72,26 +86,15 @@ public class SoundManager {
 
     public void thunk() {
         long currentTick = GameServices.getTicks();
-        if (currentTick > mLastThunkTick + 40) {
+        if (currentTick > mLastThunkTick + THUNK_DEBOUNCE) {
             mLastThunkTick = currentTick;
             mThunk.play();
         }
     }
 
-    public void screech() {
-        long currentTick = GameServices.getTicks();
-        if (currentTick > mLastScreechTick + 240) {
-            mLastScreechTick = currentTick;
-            mScreech.play();
-        }
-    }
-
-    public void setPantingTarget(float level) {
-        mPantingTarget = level;
-    }
-
-    public void killThings() {
-        mPanting.stop();
-        mWind.stop();
+    public void update() {
+        mPantingLevel = mPantingLevel * PANT_UPDATE_SPEED + mPantingTarget
+                * (1.0f - PANT_UPDATE_SPEED);
+        mPanting.setVolume(mPantingLevel);
     }
 }
